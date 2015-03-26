@@ -1,0 +1,47 @@
+<ivy-module version="2.0">
+
+	<info organisation="org.canary" module="server" />
+
+	<configurations>
+		<conf name="main" />
+		<conf name="test" />
+	</configurations>
+
+	<dependencies>
+
+		<!-- Apache Commons -->
+		<dependency org="org.apache.commons" name="commons-dbcp2" rev="2.1" conf="main->default" />
+		<dependency org="org.apache.commons" name="commons-lang3" rev="3.3.2" conf="main->default" />
+
+		<!-- Hibernate -->
+		<dependency org="org.hibernate" name="hibernate-core" rev="4.3.8.Final" conf="main->default" />
+
+		<!-- Jackson -->
+		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.5.1" conf="main->default" />
+
+		<!-- Javax -->
+		<dependency org="javax.persistence" name="persistence-api" rev="1.0.2" conf="main->default" />
+		<dependency org="javax.servlet" name="javax.servlet-api" rev="3.1.0" conf="main->default" />
+
+		<!-- JUnit -->
+		<dependency org="junit" name="junit" rev="4.11" conf="test->default" />
+
+		<!-- MySQL -->
+		<dependency org="mysql" name="mysql-connector-java" rev="5.1.34" conf="main->default" />
+
+		<!-- Saxon -->
+		<dependency org="net.sf.saxon" name="saxon" rev="8.7" conf="main->default" />
+
+		<!-- Spring -->
+		<dependency org="org.springframework" name="spring-context" rev="4.1.5.RELEASE" conf="main->default" />
+		<dependency org="org.springframework" name="spring-core" rev="4.1.5.RELEASE" conf="main->default" />
+		<dependency org="org.springframework" name="spring-orm" rev="4.1.5.RELEASE" conf="main->default" />
+		<dependency org="org.springframework" name="spring-tx" rev="4.1.5.RELEASE" conf="main->default" />
+		<dependency org="org.springframework" name="spring-web" rev="4.1.5.RELEASE" conf="main->default" />
+		<dependency org="org.springframework" name="spring-webmvc" rev="4.1.5.RELEASE" conf="main->default" />
+
+		<dependency org="org.springframework" name="spring-test" rev="4.1.5.RELEASE" conf="test->default" />
+
+	</dependencies>
+
+</ivy-module>

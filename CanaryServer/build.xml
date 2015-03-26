@@ -1,0 +1,120 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="CanaryServer" basedir=".">
+
+	<!-- Properties -->
+	<property name="build" value="${basedir}/build" />
+	<property name="ivy" value="${basedir}/ivy" />
+	<property name="reports" value="${basedir}/reports" />
+	<property name="src" value="${basedir}/src" />
+
+	<property name="reports.junit" value="${reports}/junit" />
+
+	<property name="main" value="${src}/main" />
+	<property name="test" value="${src}/test" />
+
+	<property name="main.java" value="${main}/java" />
+	<property name="main.resources" value="${main}/resources" />
+	<property name="main.bin" value="${basedir}/bin" />
+
+	<property name="test.java" value="${test}/java" />
+	<property name="test.resources" value="${test}/resources" />
+	<property name="test.bin" value="${main.bin}/test" />
+
+	<property name="main.config" value="${main.resources}/config" />
+
+	<property name="main.lib" value="${main.resources}/lib" />
+	<property name="test.lib" value="${test.resources}/lib" />
+
+	<property name="ivy.version" value="2.1.0-rc2" />
+	<property name="ivy.url" value="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar" />
+
+	<!-- Paths -->
+	<path id="junit.path">
+		<path refid="test.path" />
+		<pathelement location="${basedir}" />
+	</path>
+
+	<path id="ivy.path">
+		<fileset dir="${ivy}" includes="**/*.jar" />
+	</path>
+
+	<path id="main.path">
+		<pathelement location="${main.bin}" />
+		<pathelement location="${main.config}" />
+		<fileset dir="${main.lib}" includes="**/*.jar" />
+	</path>
+
+	<path id="test.path">
+		<path refid="main.path" />
+		<pathelement location="${test.bin}" />
+		<fileset dir="${test.lib}" includes="**/*.jar" />
+	</path>
+
+	<!-- Targets -->
+	<target name="clean">
+		<delete dir="${build}" />
+		<delete dir="${reports}" />
+		<delete dir="${main.bin}" />
+		<delete dir="${main.lib}" />
+		<delete dir="${test.lib}" />
+	</target>
+
+	<!-- Ivy -->
+	<target name="check-ivy">
+		<available file="${ivy}/ivy-${ivy.version}.jar" property="ivy.found" />
+	</target>
+
+	<target name="download-ivy" depends="check-ivy" unless="ivy.found">
+		<mkdir dir="${ivy}" />
+		<get src="${ivy.url}" dest="${ivy}/ivy-${ivy.version}.jar" usetimestamp="true" />
+	</target>
+
+	<target name="init-ivy" depends="download-ivy">
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.path" />
+	</target>
+
+	<target name="resolve-main" depends="clean, init-ivy">
+		<mkdir dir="${main.lib}" />
+		<ivy:retrieve pattern="${main.lib}/[artifact]-[revision].[ext]" conf="main" />
+	</target>
+
+	<target name="resolve-test" depends="clean, init-ivy">
+		<mkdir dir="${test.lib}" />
+		<ivy:retrieve pattern="${test.lib}/[artifact]-[revision].[ext]" conf="test" />
+	</target>
+
+	<!-- Compile -->
+	<target name="compile-main" depends="resolve-main">
+		<mkdir dir="${main.bin}" />
+		<javac srcdir="${main.java}" destdir="${main.bin}" classpathref="main.path" includeantruntime="false" />
+	</target>
+
+	<target name="compile-test" depends="resolve-test, compile-main">
+		<mkdir dir="${test.bin}" />
+		<javac srcdir="${test.java}" destdir="${test.bin}" classpathref="test.path" includeantruntime="false" />
+	</target>
+
+	<!-- JUnit -->
+	<target name="junit" depends="compile-test" description="">
+		<mkdir dir="${reports.junit}" />
+		<junit printsummary="yes" haltonfailure="true" fork="true">
+			<classpath refid="junit.path" />
+			<formatter type="xml" />
+			<batchtest todir="${reports.junit}">
+				<fileset dir="${test.java}" includes="**/*Test.java" excludes="**/Abstract*.java"/>
+			</batchtest>
+		</junit>
+	</target>
+
+	<!-- Build -->
+	<target name="build" depends="compile-main" description="">
+		<mkdir dir="${build}" />
+		<war destfile="${build}/canary-server.war" webxml="${main.config}/web.xml">
+			<webinf dir="${main.config}" excludesfile="${main.config}/web.xml" />
+			<lib dir="${main.lib}" />
+			<classes dir="${main.bin}" />
+		</war>
+	</target>
+
+	<target name="ci-build" depends="junit, build" description="" />
+
+</project>

@@ -3,6 +3,7 @@
 	<!-- Properties -->
 	<property name="build" value="${basedir}/build" />
 	<property name="ivy" value="${basedir}/ivy" />
+	<property name="output" value="${basedir}/output" />
 	<property name="reports" value="${basedir}/reports" />
 	<property name="src" value="${basedir}/src" />
 
@@ -52,6 +53,9 @@
 	<!-- Targets -->
 	<target name="clean">
 		<delete dir="${build}" />
+		<delete>
+			<fileset dir="${output}" includes="**/*.log" />
+		</delete>
 		<delete dir="${reports}" />
 		<delete dir="${main.bin}" />
 		<delete dir="${main.lib}" />
@@ -98,6 +102,7 @@
 		<mkdir dir="${reports.junit}" />
 		<junit printsummary="yes" haltonfailure="true" fork="true">
 			<classpath refid="junit.path" />
+			<sysproperty key="log4j.configuration" value="file:${basedir}/log4j.properties" />
 			<formatter type="xml" />
 			<batchtest todir="${reports.junit}">
 				<fileset dir="${test.java}" includes="**/*Test.java" excludes="**/Abstract*.java"/>

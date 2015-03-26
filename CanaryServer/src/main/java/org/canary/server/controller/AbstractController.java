@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.canary.server.service.CrudService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +28,17 @@ public abstract class AbstractController<Model> implements CrudController {
 
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
+    private static final Logger LOGGER = Logger
+	    .getLogger(AbstractController.class);
+
     protected AbstractController() {
 	super();
     }
 
     @PostConstruct
     public final void postConstruct() {
+
+	LOGGER.debug("postConstruct");
 
 	this.clazz = this.getModelClass();
 	this.service = this.getService();
@@ -45,6 +51,14 @@ public abstract class AbstractController<Model> implements CrudController {
     @Override
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     public final ResponseEntity<String> read(@PathVariable("id") final String id) {
+
+	LOGGER.debug("read[id=" + id + "]");
+
+	if (StringUtils.isBlank(id)) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; id cannot be blank.");
+	}
 
 	final int identifier;
 	final Model model;
@@ -70,6 +84,14 @@ public abstract class AbstractController<Model> implements CrudController {
 	    @PathVariable("id") final String id,
 	    final HttpServletRequest request) {
 
+	LOGGER.debug("update[id=" + id + ", request=" + request + "]");
+
+	if (StringUtils.isBlank(id) || request == null) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; id cannot be blank and request cannot be null.");
+	}
+
 	final String json;
 	final Model model;
 
@@ -94,6 +116,14 @@ public abstract class AbstractController<Model> implements CrudController {
     public final ResponseEntity<String> delete(
 	    @PathVariable("id") final String id) {
 
+	LOGGER.debug("delete[id=" + id + "]");
+
+	if (StringUtils.isBlank(id)) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; id cannot be blank.");
+	}
+
 	final int identifier;
 
 	ResponseEntity<String> response;
@@ -114,6 +144,14 @@ public abstract class AbstractController<Model> implements CrudController {
     protected final String getRequestBody(final HttpServletRequest request)
 	    throws IOException {
 
+	LOGGER.debug("getRequestBody[request=" + request + "]");
+
+	if (request == null) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; request cannot be null.");
+	}
+
 	final BufferedReader reader = request.getReader();
 	final StringBuffer buffer = new StringBuffer();
 
@@ -132,12 +170,28 @@ public abstract class AbstractController<Model> implements CrudController {
     protected final ResponseEntity<String> getResponse(final Model model)
 	    throws JsonProcessingException {
 
+	LOGGER.debug("getResponse[model=" + model + "]");
+
+	if (model == null) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; model cannot be null.");
+	}
+
 	final String json = JSON_MAPPER.writeValueAsString(model);
 
 	return new ResponseEntity<String>(json, HttpStatus.OK);
     }
 
     protected final ResponseEntity<String> getResponse(final Exception caught) {
+
+	LOGGER.debug("getResponse[caught=" + caught + "]");
+
+	if (caught == null) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; caught cannot be null.");
+	}
 
 	final StringWriter stringWriter = new StringWriter();
 	final PrintWriter printWriter = new PrintWriter(stringWriter);
@@ -151,10 +205,22 @@ public abstract class AbstractController<Model> implements CrudController {
     }
 
     protected final ResponseEntity<String> getResponse() {
+
+	LOGGER.debug("getResponse");
+
 	return new ResponseEntity<String>(HttpStatus.OK);
     }
 
     protected final Model getModel(final String json) throws IOException {
+
+	LOGGER.debug("getModel[json=" + json + "]");
+
+	if (StringUtils.isBlank(json)) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; json cannot be blank.");
+	}
+
 	return JSON_MAPPER.readValue(json, this.clazz);
     }
 

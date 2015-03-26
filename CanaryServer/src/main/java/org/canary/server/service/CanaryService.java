@@ -8,27 +8,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public final class CanaryService extends AbstractService<Canary>
-{
-	@Autowired
-	private CanaryRepository	repository;
+public final class CanaryService extends AbstractService<Canary> {
 
-	private CanaryService()
-	{
-		super();
-	}
+    @Autowired
+    private CanaryRepository repository;
 
-	@Override
-	@Transactional
-	public Canary create(final String message)
-	{
-		return this.repository.create(message);
-	}
+    private CanaryService() {
+	super();
+    }
 
-	@Override
-	public CrudRepository<Canary> getRepository()
-	{
-		return this.repository;
-	}
+    @Override
+    @Transactional
+    public Canary create(final String message) {
+	return this.repository.create(message);
+    }
+
+    @Override
+    public CrudRepository<Canary> getRepository() {
+	return this.repository;
+    }
 
 }

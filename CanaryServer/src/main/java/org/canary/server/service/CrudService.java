@@ -1,13 +1,13 @@
 package org.canary.server.service;
 
-public interface CrudService<Model>
-{
-	Model create(final String message);
+public interface CrudService<Model> {
 
-	Model read(final int id);
+    Model create(final String message);
 
-	void update(final Model canary);
+    Model read(final int id);
 
-	void delete(final int id);
+    void update(final Model canary);
+
+    void delete(final int id);
 
 }

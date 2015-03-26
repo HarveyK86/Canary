@@ -19,143 +19,143 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public abstract class AbstractController<Model> implements CrudController
-{
-	private Class<Model>				clazz;
+public abstract class AbstractController<Model> implements CrudController {
 
-	private CrudService<Model>			service;
+    private Class<Model> clazz;
 
-	private static final ObjectMapper	JSON_MAPPER	= new ObjectMapper();
+    private CrudService<Model> service;
 
-	protected AbstractController()
-	{
-		super();
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+
+    protected AbstractController() {
+	super();
+    }
+
+    @PostConstruct
+    public final void postConstruct() {
+
+	this.clazz = this.getModelClass();
+	this.service = this.getService();
+    }
+
+    public abstract Class<Model> getModelClass();
+
+    public abstract CrudService<Model> getService();
+
+    @Override
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    public final ResponseEntity<String> read(@PathVariable("id") final String id) {
+
+	final int identifier;
+	final Model model;
+
+	ResponseEntity<String> response;
+
+	try {
+
+	    identifier = Integer.valueOf(id);
+	    model = this.service.read(identifier);
+	    response = this.getResponse(model);
+
+	} catch (final Exception e) {
+	    response = this.getResponse(e);
 	}
 
-	@PostConstruct
-	public final void postConstruct()
-	{
-		this.clazz = this.getModelClass();
-		this.service = this.getService();
+	return response;
+    }
+
+    @Override
+    @RequestMapping(method = RequestMethod.POST, value = "/{id}")
+    public final ResponseEntity<String> update(
+	    @PathVariable("id") final String id,
+	    final HttpServletRequest request) {
+
+	final String json;
+	final Model model;
+
+	ResponseEntity<String> response;
+
+	try {
+
+	    json = this.getRequestBody(request);
+	    model = this.getModel(json);
+	    this.service.update(model);
+	    response = this.getResponse();
+
+	} catch (final Exception e) {
+	    response = this.getResponse(e);
 	}
 
-	public abstract Class<Model> getModelClass();
+	return response;
+    }
 
-	public abstract CrudService<Model> getService();
+    @Override
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    public final ResponseEntity<String> delete(
+	    @PathVariable("id") final String id) {
 
-	@Override
-	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
-	public final ResponseEntity<String> read(@PathVariable("id") final String id)
-	{
-		final int identifier;
-		final Model model;
+	final int identifier;
 
-		ResponseEntity<String> response;
+	ResponseEntity<String> response;
 
-		try
-		{
-			identifier = Integer.valueOf(id);
-			model = this.service.read(identifier);
-			response = this.getResponse(model);
-		}
-		catch ( final Exception e )
-		{
-			response = this.getResponse(e);
-		}
+	try {
 
-		return response;
+	    identifier = Integer.valueOf(id);
+	    this.service.delete(identifier);
+	    response = this.getResponse();
+
+	} catch (final Exception e) {
+	    response = this.getResponse(e);
 	}
 
-	@Override
-	@RequestMapping(method = RequestMethod.POST, value = "/{id}")
-	public final ResponseEntity<String> update(@PathVariable("id") final String id, final HttpServletRequest request)
-	{
-		final String json;
-		final Model model;
+	return response;
+    }
 
-		ResponseEntity<String> response;
+    protected final String getRequestBody(final HttpServletRequest request)
+	    throws IOException {
 
-		try
-		{
-			json = this.getRequestBody(request);
-			model = this.getModel(json);
-			this.service.update(model);
-			response = this.getResponse();
-		}
-		catch ( final Exception e )
-		{
-			response = this.getResponse(e);
-		}
+	final BufferedReader reader = request.getReader();
+	final StringBuffer buffer = new StringBuffer();
 
-		return response;
-	}
+	String line;
 
-	@Override
-	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-	public final ResponseEntity<String> delete(@PathVariable("id") final String id)
-	{
-		final int identifier;
+	do {
 
-		ResponseEntity<String> response;
+	    line = reader.readLine();
+	    buffer.append(line == null ? StringUtils.EMPTY : line);
 
-		try
-		{
-			identifier = Integer.valueOf(id);
-			this.service.delete(identifier);
-			response = this.getResponse();
-		}
-		catch ( final Exception e )
-		{
-			response = this.getResponse(e);
-		}
+	} while (line != null);
 
-		return response;
-	}
+	return buffer.toString();
+    }
 
-	protected final String getRequestBody(final HttpServletRequest request) throws IOException
-	{
-		final BufferedReader reader = request.getReader();
-		final StringBuffer buffer = new StringBuffer();
+    protected final ResponseEntity<String> getResponse(final Model model)
+	    throws JsonProcessingException {
 
-		String line;
+	final String json = JSON_MAPPER.writeValueAsString(model);
 
-		do
-		{
-			line = reader.readLine();
-			buffer.append(line == null ? StringUtils.EMPTY : line);
-		}
-		while ( line != null );
+	return new ResponseEntity<String>(json, HttpStatus.OK);
+    }
 
-		return buffer.toString();
-	}
+    protected final ResponseEntity<String> getResponse(final Exception caught) {
 
-	protected final ResponseEntity<String> getResponse(final Model model) throws JsonProcessingException
-	{
-		final String json = JSON_MAPPER.writeValueAsString(model);
+	final StringWriter stringWriter = new StringWriter();
+	final PrintWriter printWriter = new PrintWriter(stringWriter);
+	final String error;
 
-		return new ResponseEntity<String>(json, HttpStatus.OK);
-	}
+	caught.printStackTrace(printWriter);
+	error = stringWriter.toString();
 
-	protected final ResponseEntity<String> getResponse(final Exception caught)
-	{
-		final StringWriter stringWriter = new StringWriter();
-		final PrintWriter printWriter = new PrintWriter(stringWriter);
-		final String error;
+	return new ResponseEntity<String>(error,
+		HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-		caught.printStackTrace(printWriter);
-		error = stringWriter.toString();
+    protected final ResponseEntity<String> getResponse() {
+	return new ResponseEntity<String>(HttpStatus.OK);
+    }
 
-		return new ResponseEntity<String>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	protected final ResponseEntity<String> getResponse()
-	{
-		return new ResponseEntity<String>(HttpStatus.OK);
-	}
-
-	protected final Model getModel(final String json) throws IOException
-	{
-		return JSON_MAPPER.readValue(json, this.clazz);
-	}
+    protected final Model getModel(final String json) throws IOException {
+	return JSON_MAPPER.readValue(json, this.clazz);
+    }
 
 }

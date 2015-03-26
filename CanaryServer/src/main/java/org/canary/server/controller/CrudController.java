@@ -4,14 +4,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
 
-public interface CrudController
-{
-	ResponseEntity<String> create(final HttpServletRequest request);
+public interface CrudController {
 
-	ResponseEntity<String> read(final String id);
+    ResponseEntity<String> create(final HttpServletRequest request);
 
-	ResponseEntity<String> update(final String id, final HttpServletRequest request);
+    ResponseEntity<String> read(final String id);
 
-	ResponseEntity<String> delete(final String id);
+    ResponseEntity<String> update(final String id,
+	    final HttpServletRequest request);
+
+    ResponseEntity<String> delete(final String id);
 
 }

@@ -6,55 +6,53 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractRepository<Model> implements CrudRepository<Model>
-{
-	@Autowired
-	private SessionFactory	sessionFactory;
+public abstract class AbstractRepository<Model> implements
+	CrudRepository<Model> {
 
-	private Class<Model>	clazz;
+    @Autowired
+    private SessionFactory sessionFactory;
 
-	protected AbstractRepository()
-	{
-		super();
-	}
+    private Class<Model> clazz;
 
-	@PostConstruct
-	public final void postConstruct()
-	{
-		this.clazz = this.getModelClass();
-	}
+    protected AbstractRepository() {
+	super();
+    }
 
-	public abstract Class<Model> getModelClass();
+    @PostConstruct
+    public final void postConstruct() {
+	this.clazz = this.getModelClass();
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public final Model read(final int id)
-	{
-		final Session session = this.getSession();
+    public abstract Class<Model> getModelClass();
 
-		return (Model) session.get(this.clazz, id);
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public final Model read(final int id) {
 
-	@Override
-	public final void update(final Model model)
-	{
-		final Session session = this.getSession();
+	final Session session = this.getSession();
 
-		session.update(model);
-	}
+	return (Model) session.get(this.clazz, id);
+    }
 
-	@Override
-	public final void delete(final int id)
-	{
-		final Model model = this.read(id);
-		final Session session = this.getSession();
+    @Override
+    public final void update(final Model model) {
 
-		session.delete(model);
-	}
+	final Session session = this.getSession();
 
-	protected final Session getSession()
-	{
-		return this.sessionFactory.getCurrentSession();
-	}
+	session.update(model);
+    }
+
+    @Override
+    public final void delete(final int id) {
+
+	final Model model = this.read(id);
+	final Session session = this.getSession();
+
+	session.delete(model);
+    }
+
+    protected final Session getSession() {
+	return this.sessionFactory.getCurrentSession();
+    }
 
 }

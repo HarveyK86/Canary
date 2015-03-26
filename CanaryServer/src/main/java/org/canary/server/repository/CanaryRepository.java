@@ -5,30 +5,28 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public final class CanaryRepository extends AbstractRepository<Canary>
-{
-	private CanaryRepository()
-	{
-		super();
-	}
+public final class CanaryRepository extends AbstractRepository<Canary> {
 
-	@Override
-	public Canary create(final String message)
-	{
-		final Canary canary = new Canary();
-		final Session session = super.getSession();
-		final int id;
+    private CanaryRepository() {
+	super();
+    }
 
-		canary.setMessage(message);
-		id = (int) session.save(canary);
+    @Override
+    public Canary create(final String message) {
 
-		return super.read(id);
-	}
+	final Canary canary = new Canary();
+	final Session session = super.getSession();
+	final int id;
 
-	@Override
-	public Class<Canary> getModelClass()
-	{
-		return Canary.class;
-	}
+	canary.setMessage(message);
+	id = (int) session.save(canary);
+
+	return super.read(id);
+    }
+
+    @Override
+    public Class<Canary> getModelClass() {
+	return Canary.class;
+    }
 
 }

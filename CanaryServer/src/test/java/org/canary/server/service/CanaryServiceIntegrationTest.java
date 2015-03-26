@@ -10,46 +10,46 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationContext.xml")
-public final class CanaryServiceIntegrationTest
-{
-	@Autowired
-	private CrudService<Canary>	service;
+public final class CanaryServiceIntegrationTest {
 
-	private static final String	TEST_MESSAGE		= "Test Message";
-	private static final String	TEST_MESSAGE_UPDATE	= "Test Message Update";
+    @Autowired
+    private CrudService<Canary> service;
 
-	@Test
-	public void createReadUpdateAndDeleteShouldExecuteCorrectly()
-	{
-		final Canary create;
-		final Canary read;
-		final Canary update;
-		final Canary delete;
+    private static final String TEST_MESSAGE = "Test Message";
+    private static final String TEST_MESSAGE_UPDATE = "Test Message Update";
 
-		create = this.service.create(TEST_MESSAGE);
+    @Test
+    public void createReadUpdateAndDeleteShouldExecuteCorrectly() {
 
-		Assert.assertNotNull(create);
-		Assert.assertTrue(create.getId() >= 1);
-		Assert.assertEquals(TEST_MESSAGE, create.getMessage());
+	final Canary create;
+	final Canary read;
+	final Canary update;
+	final Canary delete;
 
-		read = this.service.read(create.getId());
+	create = this.service.create(TEST_MESSAGE);
 
-		Assert.assertNotNull(read);
-		Assert.assertEquals(create.getId(), read.getId());
-		Assert.assertEquals(create.getMessage(), read.getMessage());
+	Assert.assertNotNull(create);
+	Assert.assertTrue(create.getId() >= 1);
+	Assert.assertEquals(TEST_MESSAGE, create.getMessage());
 
-		read.setMessage(TEST_MESSAGE_UPDATE);
-		this.service.update(read);
-		update = this.service.read(read.getId());
+	read = this.service.read(create.getId());
 
-		Assert.assertNotNull(update);
-		Assert.assertEquals(read.getId(), update.getId());
-		Assert.assertEquals(TEST_MESSAGE_UPDATE, update.getMessage());
+	Assert.assertNotNull(read);
+	Assert.assertEquals(create.getId(), read.getId());
+	Assert.assertEquals(create.getMessage(), read.getMessage());
 
-		this.service.delete(update.getId());
-		delete = this.service.read(update.getId());
+	read.setMessage(TEST_MESSAGE_UPDATE);
+	this.service.update(read);
+	update = this.service.read(read.getId());
 
-		Assert.assertNull(delete);
-	}
+	Assert.assertNotNull(update);
+	Assert.assertEquals(read.getId(), update.getId());
+	Assert.assertEquals(TEST_MESSAGE_UPDATE, update.getMessage());
+
+	this.service.delete(update.getId());
+	delete = this.service.read(update.getId());
+
+	Assert.assertNull(delete);
+    }
 
 }

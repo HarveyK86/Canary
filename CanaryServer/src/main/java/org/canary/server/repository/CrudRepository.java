@@ -1,13 +1,13 @@
 package org.canary.server.repository;
 
-public interface CrudRepository<Model>
-{
-	Model create(final String message);
+public interface CrudRepository<Model> {
 
-	Model read(final int id);
+    Model create(final String message);
 
-	void update(final Model model);
+    Model read(final int id);
 
-	void delete(final int id);
+    void update(final Model model);
+
+    void delete(final int id);
 
 }

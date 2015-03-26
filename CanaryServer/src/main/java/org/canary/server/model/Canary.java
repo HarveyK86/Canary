@@ -9,34 +9,30 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Canary")
-public final class Canary
-{
-	@Id
-	@Column(name = "Id", nullable = false)
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int		id;
+public final class Canary {
 
-	@Column(name = "Message")
-	private String	message;
+    @Id
+    @Column(name = "Id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
-	public int getId()
-	{
-		return this.id;
-	}
+    @Column(name = "Message")
+    private String message;
 
-	public void setId(final int id)
-	{
-		this.id = id;
-	}
+    public int getId() {
+	return this.id;
+    }
 
-	public String getMessage()
-	{
-		return this.message;
-	}
+    public void setId(final int id) {
+	this.id = id;
+    }
 
-	public void setMessage(final String message)
-	{
-		this.message = message;
-	}
+    public String getMessage() {
+	return this.message;
+    }
+
+    public void setMessage(final String message) {
+	this.message = message;
+    }
 
 }

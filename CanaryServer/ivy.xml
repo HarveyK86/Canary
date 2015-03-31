@@ -29,6 +29,9 @@
 		<!-- Log4J -->
 		<dependency org="log4j" name="log4j" rev="1.2.17" conf="main->default" />
 
+		<!-- Mockito -->
+		<dependency org="org.mockito" name="mockito-all" rev="1.10.19" conf="test->default" />
+
 		<!-- MySQL -->
 		<dependency org="mysql" name="mysql-connector-java" rev="5.1.34" conf="main->default" />
 

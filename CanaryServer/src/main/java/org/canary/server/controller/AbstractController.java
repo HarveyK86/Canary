@@ -50,7 +50,7 @@ public abstract class AbstractController<Model> implements CrudController {
 
     @Override
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public final ResponseEntity<String> read(@PathVariable("id") final String id) {
+    public ResponseEntity<String> read(@PathVariable("id") final String id) {
 
 	LOGGER.debug("read[id=" + id + "]");
 
@@ -80,8 +80,7 @@ public abstract class AbstractController<Model> implements CrudController {
 
     @Override
     @RequestMapping(method = RequestMethod.POST, value = "/{id}")
-    public final ResponseEntity<String> update(
-	    @PathVariable("id") final String id,
+    public ResponseEntity<String> update(@PathVariable("id") final String id,
 	    final HttpServletRequest request) {
 
 	LOGGER.debug("update[id=" + id + ", request=" + request + "]");
@@ -113,8 +112,7 @@ public abstract class AbstractController<Model> implements CrudController {
 
     @Override
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    public final ResponseEntity<String> delete(
-	    @PathVariable("id") final String id) {
+    public ResponseEntity<String> delete(@PathVariable("id") final String id) {
 
 	LOGGER.debug("delete[id=" + id + "]");
 
@@ -141,7 +139,7 @@ public abstract class AbstractController<Model> implements CrudController {
 	return response;
     }
 
-    protected final String getRequestBody(final HttpServletRequest request)
+    protected String getRequestBody(final HttpServletRequest request)
 	    throws IOException {
 
 	LOGGER.debug("getRequestBody[request=" + request + "]");
@@ -211,7 +209,7 @@ public abstract class AbstractController<Model> implements CrudController {
 	return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    protected final Model getModel(final String json) throws IOException {
+    protected Model getModel(final String json) throws IOException {
 
 	LOGGER.debug("getModel[json=" + json + "]");
 

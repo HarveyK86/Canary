@@ -1,6 +1,7 @@
 package org.canary.server.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.canary.server.model.Canary;
 import org.canary.server.repository.CanaryRepository;
 import org.junit.Assert;
@@ -13,6 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
 
     @Mock
@@ -23,6 +25,9 @@ public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
     private static final Canary MODEL = new Canary();
     private static final String WHITESPACE_STRING = " ";
     private static final String MESSAGE = "Message";
+
+    private static final Logger LOGGER = Logger
+	    .getLogger(CanaryServiceTest.class);
 
     @Override
     public CrudService<Canary> getService() {
@@ -75,7 +80,7 @@ public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
-		// do nothing
+		LOGGER.debug("Expected illegal argument caught while testing.");
 	    }
 	}
     }

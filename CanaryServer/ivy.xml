@@ -3,6 +3,7 @@
 	<info organisation="org.canary" module="server" />
 
 	<configurations>
+		<conf name="pmd" />
 		<conf name="main" />
 		<conf name="test" />
 	</configurations>
@@ -34,6 +35,9 @@
 
 		<!-- MySQL -->
 		<dependency org="mysql" name="mysql-connector-java" rev="5.1.34" conf="main->default" />
+
+		<!-- PMD -->
+		<dependency org="pmd" name="pmd" rev="4.3" conf="pmd->default" />
 
 		<!-- Saxon -->
 		<dependency org="net.sf.saxon" name="saxon" rev="8.7" conf="main->default" />

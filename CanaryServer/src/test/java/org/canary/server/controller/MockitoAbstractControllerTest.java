@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.canary.server.service.CrudService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,6 +35,9 @@ public final class MockitoAbstractControllerTest {
     private static final String WHITESPACE_STRING = " ";
     private static final String ID = "1";
     private static final String INVALID_ID = "Invalid ID";
+
+    private static final Logger LOGGER = Logger
+	    .getLogger(MockitoAbstractControllerTest.class);
 
     @Before
     @SuppressWarnings("unchecked")
@@ -81,7 +85,7 @@ public final class MockitoAbstractControllerTest {
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
-		// do nothing
+		LOGGER.debug("Expected illegal argument caught while testing.");
 	    }
 	}
     }
@@ -117,7 +121,7 @@ public final class MockitoAbstractControllerTest {
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
-		// do nothing
+		LOGGER.debug("Expected illegal argument caught while testing.");
 	    }
 	}
     }
@@ -159,7 +163,7 @@ public final class MockitoAbstractControllerTest {
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
-		// do nothing
+		LOGGER.debug("Expected illegal argument caught while testing.");
 	    }
 	}
     }

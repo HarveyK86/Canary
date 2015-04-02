@@ -1,7 +1,8 @@
+/bin/
 /build/
 /ivy/
+/pmd/
 /reports/
 /src/main/resources/lib/
 /src/test/resources/lib/
 /canary.properties
-/bin/

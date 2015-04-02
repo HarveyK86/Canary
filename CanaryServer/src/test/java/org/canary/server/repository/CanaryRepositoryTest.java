@@ -1,6 +1,7 @@
 package org.canary.server.repository;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.canary.server.model.Canary;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,6 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 
     @Mock
@@ -26,6 +28,9 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 
     private static final String WHITESPACE_STRING = " ";
     private static final String MESSAGE = "Message";
+
+    private static final Logger LOGGER = Logger
+	    .getLogger(CanaryRepositoryTest.class);
 
     @Override
     public CrudRepository<Canary> getRepository() {
@@ -87,7 +92,7 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
-		// do nothing
+		LOGGER.debug("Expected illegal argument caught while testing.");
 	    }
 	}
     }

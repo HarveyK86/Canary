@@ -1,46 +1,49 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="CanaryServer" basedir=".">
 
 	<!-- Properties -->
+	<property name="bin" value="${basedir}/bin" />
 	<property name="build" value="${basedir}/build" />
 	<property name="ivy" value="${basedir}/ivy" />
+	<property name="pmd" value="${basedir}/pmd" />
 	<property name="output" value="${basedir}/output" />
 	<property name="reports" value="${basedir}/reports" />
 	<property name="src" value="${basedir}/src" />
 
 	<property name="reports.junit" value="${reports}/junit" />
+	<property name="reports.pmd" value="${reports}/pmd" />
 
 	<property name="main" value="${src}/main" />
 	<property name="test" value="${src}/test" />
 
+	<property name="main.bin" value="${bin}/main" />
 	<property name="main.java" value="${main}/java" />
 	<property name="main.resources" value="${main}/resources" />
-	<property name="main.bin" value="${basedir}/bin" />
+	<property name="main.config" value="${main.resources}/config" />
+	<property name="main.lib" value="${main.resources}/lib" />
 
+	<property name="test.bin" value="${bin}/test" />
 	<property name="test.java" value="${test}/java" />
 	<property name="test.resources" value="${test}/resources" />
-	<property name="test.bin" value="${main.bin}/test" />
-
-	<property name="main.config" value="${main.resources}/config" />
-
-	<property name="main.lib" value="${main.resources}/lib" />
 	<property name="test.lib" value="${test.resources}/lib" />
 
 	<property name="ivy.version" value="2.1.0-rc2" />
 	<property name="ivy.url" value="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar" />
 
 	<!-- Paths -->
-	<path id="junit.path">
-		<path refid="test.path" />
-		<pathelement location="${basedir}" />
-	</path>
-
 	<path id="ivy.path">
 		<fileset dir="${ivy}" includes="**/*.jar" />
 	</path>
 
+	<path id="pmd.path">
+		<fileset dir="${pmd}" includes="**/*.jar" />
+	</path>
+
+	<path id="junit.path">
+		<path refid="test.path" />
+	</path>
+
 	<path id="main.path">
 		<pathelement location="${main.bin}" />
-		<pathelement location="${main.config}" />
 		<fileset dir="${main.lib}" includes="**/*.jar" />
 	</path>
 
@@ -52,12 +55,13 @@
 
 	<!-- Targets -->
 	<target name="clean">
-		<delete dir="${build}" />
+		<delete dir="${test.bin}" />
+		<delete dir="${pmd}" />
 		<delete>
 			<fileset dir="${output}" includes="**/*.log" />
 		</delete>
 		<delete dir="${reports}" />
-		<delete dir="${main.bin}" />
+		<delete dir="${build}" />
 		<delete dir="${main.lib}" />
 		<delete dir="${test.lib}" />
 	</target>
@@ -76,6 +80,11 @@
 		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.path" />
 	</target>
 
+	<target name="resolve-pmd" depends="clean, init-ivy">
+		<mkdir dir="${pmd}" />
+		<ivy:retrieve pattern="${pmd}/[artifcact]-[revision].[ext]" conf="pmd" />
+	</target>
+
 	<target name="resolve-main" depends="clean, init-ivy">
 		<mkdir dir="${main.lib}" />
 		<ivy:retrieve pattern="${main.lib}/[artifact]-[revision].[ext]" conf="main" />
@@ -88,6 +97,7 @@
 
 	<!-- Compile -->
 	<target name="compile-main" depends="resolve-main">
+		<delete dir="${main.bin}" />
 		<mkdir dir="${main.bin}" />
 		<javac srcdir="${main.java}" destdir="${main.bin}" classpathref="main.path" includeantruntime="false" />
 	</target>
@@ -97,7 +107,30 @@
 		<javac srcdir="${test.java}" destdir="${test.bin}" classpathref="test.path" includeantruntime="false" />
 	</target>
 
+	<!-- PMD -->
+	<target name="no-pmd">
+		<property name="skip.pmd" value="true" />
+	</target>
+
+	<target name="init-pmd" depends="resolve-pmd">
+		<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.path" />
+	</target>
+
+	<target name="pmd" depends="init-pmd, compile-test" unless="skip.pmd" description="">
+		<mkdir dir="${reports.pmd}" />
+		<pmd shortFilenames="true" failOnRuleViolation="true">
+			<ruleset>${basedir}/pmd.xml</ruleset>
+			<formatter type="html" toFile="${reports.pmd}/pmd.html" />
+			<fileset dir="${main.java}" includes="**/*.java" />
+			<fileset dir="${test.java}" includes="**/*.java" />
+		</pmd>
+	</target>
+
 	<!-- JUnit -->
+	<target name="no-junit">
+		<property name="skip.junit" value="true" />
+	</target>
+
 	<target name="junit" depends="compile-test" description="">
 		<mkdir dir="${reports.junit}" />
 		<junit printsummary="yes" haltonfailure="true" fork="true">
@@ -111,6 +144,8 @@
 	</target>
 
 	<!-- Build -->
+	<target name="fast" depends="no-pmd, no-junit" />
+
 	<target name="build" depends="compile-main" description="">
 		<mkdir dir="${build}" />
 		<war destfile="${build}/canary-server.war" webxml="${main.config}/web.xml">
@@ -120,6 +155,6 @@
 		</war>
 	</target>
 
-	<target name="ci-build" depends="junit, build" description="" />
+	<target name="ci-build" depends="pmd, junit, build" description="" />
 
 </project>

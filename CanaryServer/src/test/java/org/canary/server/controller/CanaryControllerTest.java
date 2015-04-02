@@ -21,6 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 
     @Mock

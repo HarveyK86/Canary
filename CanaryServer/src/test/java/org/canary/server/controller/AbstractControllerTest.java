@@ -1,76 +1,36 @@
 package org.canary.server.controller;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.canary.server.service.CrudService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class MockitoAbstractControllerTest {
+public abstract class AbstractControllerTest<Model> {
 
-    @Mock
-    private CrudService<String> service;
-
-    @Mock
     private HttpServletRequest request;
 
     private CrudController controller;
 
-    private static final String JSON = "Json";
-    private static final String MODEL = "Model";
     private static final String WHITESPACE_STRING = " ";
     private static final String ID = "1";
     private static final String INVALID_ID = "Invalid ID";
 
     @Before
-    @SuppressWarnings("unchecked")
-    public void before() throws IOException {
-
-	this.controller = Mockito.mock(AbstractController.class);
-
-	ReflectionTestUtils.setField(this.controller, "service", this.service);
-
-	Mockito.doCallRealMethod() //
-		.when(this.controller) //
-		.read(Matchers.anyString());
-
-	Mockito.doCallRealMethod() //
-		.when(this.controller) //
-		.update(Matchers.anyString(), //
-			Matchers.any(HttpServletRequest.class));
-
-	Mockito.doCallRealMethod() //
-		.when(this.controller) //
-		.delete(Matchers.anyString());
-
-	Mockito.when(((AbstractController<String>) this.controller) //
-		.getRequestBody(Matchers.any(HttpServletRequest.class))) //
-		.thenReturn(JSON);
-
-	Mockito.when(((AbstractController<String>) this.controller) //
-		.getModel(Matchers.anyString())) //
-		.thenReturn(MODEL);
-
-	Mockito.when(this.service //
-		.read(Matchers.anyInt())) //
-		.thenReturn(MODEL);
+    public final void before() {
+	this.controller = this.getController();
+	this.request = this.getRequest();
     }
 
+    public abstract CrudController getController();
+
+    public abstract HttpServletRequest getRequest();
+
     @Test
-    public void readShouldThrowIllegalArgument() {
+    public final void readShouldThrowIllegalArgument() {
 
 	for (final String id : new String[] { null, StringUtils.EMPTY,
 		WHITESPACE_STRING }) {
@@ -87,7 +47,7 @@ public final class MockitoAbstractControllerTest {
     }
 
     @Test
-    public void readShouldReturnOK() {
+    public final void readShouldReturnOK() {
 
 	final ResponseEntity<String> response = this.controller.read(ID);
 
@@ -96,7 +56,7 @@ public final class MockitoAbstractControllerTest {
     }
 
     @Test
-    public void readShouldReturnINTERNAL_SERVER_ERROR() {
+    public final void readShouldReturnINTERNAL_SERVER_ERROR() {
 
 	final ResponseEntity<String> response = this.controller
 		.read(INVALID_ID);
@@ -106,7 +66,7 @@ public final class MockitoAbstractControllerTest {
     }
 
     @Test
-    public void updateIdShouldThrowIllegalArgument() {
+    public final void updateIdShouldThrowIllegalArgument() {
 
 	for (final String id : new String[] { null, StringUtils.EMPTY,
 		WHITESPACE_STRING }) {
@@ -123,12 +83,12 @@ public final class MockitoAbstractControllerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void updateRequestShouldThrowIllegalArgument() {
+    public final void updateRequestShouldThrowIllegalArgument() {
 	this.controller.update(ID, null);
     }
 
     @Test
-    public void updateShouldReturnOK() {
+    public final void updateShouldReturnOK() {
 
 	final ResponseEntity<String> response = this.controller.update(ID,
 		this.request);
@@ -138,7 +98,7 @@ public final class MockitoAbstractControllerTest {
     }
 
     @Test
-    public void updateShouldReturnINTERNAL_SERVER_ERROR() {
+    public final void updateShouldReturnINTERNAL_SERVER_ERROR() {
 
 	final ResponseEntity<String> response = this.controller.update(
 		INVALID_ID, this.request);
@@ -148,7 +108,7 @@ public final class MockitoAbstractControllerTest {
     }
 
     @Test
-    public void deleteShouldThrowIllegalArgument() {
+    public final void deleteShouldThrowIllegalArgument() {
 
 	for (final String id : new String[] { null, StringUtils.EMPTY,
 		WHITESPACE_STRING }) {
@@ -165,7 +125,7 @@ public final class MockitoAbstractControllerTest {
     }
 
     @Test
-    public void deleteShouldReturnOK() {
+    public final void deleteShouldReturnOK() {
 
 	final ResponseEntity<String> response = this.controller.delete(ID);
 
@@ -174,7 +134,7 @@ public final class MockitoAbstractControllerTest {
     }
 
     @Test
-    public void deleteShouldReturnINTERNAL_SERVER_ERROR() {
+    public final void deleteShouldThrowINTERNAL_SERVER_ERROR() {
 
 	final ResponseEntity<String> response = this.controller
 		.delete(INVALID_ID);

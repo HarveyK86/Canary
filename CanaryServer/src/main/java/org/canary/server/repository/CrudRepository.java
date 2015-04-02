@@ -6,7 +6,7 @@ public interface CrudRepository<Model> {
 
     Model read(final int id);
 
-    void update(final Model model);
+    void update(final int id, final Model model);
 
     void delete(final int id);
 

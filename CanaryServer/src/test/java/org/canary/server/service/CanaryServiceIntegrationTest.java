@@ -15,41 +15,40 @@ public final class CanaryServiceIntegrationTest {
     @Autowired
     private CrudService<Canary> service;
 
-    private static final String TEST_MESSAGE = "Test Message";
-    private static final String TEST_MESSAGE_UPDATE = "Test Message Update";
+    private static final String MESSAGE = "Message";
+    private static final String NEW_MESSAGE = "New Message";
 
     @Test
     public void createReadUpdateAndDeleteShouldExecuteCorrectly() {
 
-	final Canary create;
-	final Canary read;
-	final Canary update;
-	final Canary delete;
+	final Canary model;
 
-	create = this.service.create(TEST_MESSAGE);
+	Canary other;
 
-	Assert.assertNotNull(create);
-	Assert.assertTrue(create.getId() >= 1);
-	Assert.assertEquals(TEST_MESSAGE, create.getMessage());
+	model = this.service.create(MESSAGE);
 
-	read = this.service.read(create.getId());
+	Assert.assertNotNull(model);
+	Assert.assertTrue(model.getId() >= 1);
+	Assert.assertEquals(MESSAGE, model.getMessage());
 
-	Assert.assertNotNull(read);
-	Assert.assertEquals(create.getId(), read.getId());
-	Assert.assertEquals(create.getMessage(), read.getMessage());
+	other = this.service.read(model.getId());
 
-	read.setMessage(TEST_MESSAGE_UPDATE);
-	this.service.update(read);
-	update = this.service.read(read.getId());
+	Assert.assertNotNull(other);
+	Assert.assertEquals(model.getId(), other.getId());
+	Assert.assertEquals(model.getMessage(), other.getMessage());
 
-	Assert.assertNotNull(update);
-	Assert.assertEquals(read.getId(), update.getId());
-	Assert.assertEquals(TEST_MESSAGE_UPDATE, update.getMessage());
+	model.setMessage(NEW_MESSAGE);
+	this.service.update(model.getId(), model);
+	other = this.service.read(model.getId());
 
-	this.service.delete(update.getId());
-	delete = this.service.read(update.getId());
+	Assert.assertNotNull(other);
+	Assert.assertEquals(model.getId(), other.getId());
+	Assert.assertEquals(NEW_MESSAGE, other.getMessage());
 
-	Assert.assertNull(delete);
+	this.service.delete(model.getId());
+	other = this.service.read(model.getId());
+
+	Assert.assertNull(other);
     }
 
 }

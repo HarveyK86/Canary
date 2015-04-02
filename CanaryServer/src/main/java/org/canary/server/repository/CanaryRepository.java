@@ -7,7 +7,7 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public final class CanaryRepository extends AbstractRepository<Canary> {
+public class CanaryRepository extends AbstractRepository<Canary> {
 
     private static final Logger LOGGER = Logger
 	    .getLogger(CanaryRepository.class);
@@ -38,7 +38,7 @@ public final class CanaryRepository extends AbstractRepository<Canary> {
     }
 
     @Override
-    public Class<Canary> getModelClass() {
+    public final Class<Canary> getModelClass() {
 
 	LOGGER.debug("getModelClass");
 

@@ -91,6 +91,7 @@ public abstract class AbstractController<Model> implements CrudController {
 		    "Illegal argument; id cannot be blank and request cannot be null.");
 	}
 
+	final int identifier;
 	final String json;
 	final Model model;
 
@@ -98,9 +99,10 @@ public abstract class AbstractController<Model> implements CrudController {
 
 	try {
 
+	    identifier = Integer.valueOf(id);
 	    json = this.getRequestBody(request);
 	    model = this.getModel(json);
-	    this.service.update(model);
+	    this.service.update(identifier, model);
 	    response = this.getResponse();
 
 	} catch (final Exception e) {

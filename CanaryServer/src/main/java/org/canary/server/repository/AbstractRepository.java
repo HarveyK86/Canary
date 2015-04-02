@@ -7,7 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractRepository<Model> implements
+public abstract class AbstractRepository<Model extends Persistable> implements
 	CrudRepository<Model> {
 
     @Autowired
@@ -34,7 +34,7 @@ public abstract class AbstractRepository<Model> implements
 
     @Override
     @SuppressWarnings("unchecked")
-    public final Model read(final int id) {
+    public Model read(final int id) {
 
 	LOGGER.debug("read[id=" + id + "]");
 
@@ -44,14 +44,20 @@ public abstract class AbstractRepository<Model> implements
     }
 
     @Override
-    public final void update(final Model model) {
+    public void update(final int id, final Model model) {
 
-	LOGGER.debug("update[model=" + model + "]");
+	LOGGER.debug("update[id=" + id + ", model=" + model + "]");
 
 	if (model == null) {
 
 	    throw new IllegalArgumentException(
 		    "Illegal argument; model cannot be null.");
+	}
+
+	if (id != model.getId()) {
+
+	    throw new IllegalStateException(
+		    "Illegal state; id and model ID cannot be different.");
 	}
 
 	final Session session = this.getSession();
@@ -60,7 +66,7 @@ public abstract class AbstractRepository<Model> implements
     }
 
     @Override
-    public final void delete(final int id) {
+    public void delete(final int id) {
 
 	LOGGER.debug("delete[id=" + id + "]");
 
@@ -70,7 +76,7 @@ public abstract class AbstractRepository<Model> implements
 	session.delete(model);
     }
 
-    protected final Session getSession() {
+    protected Session getSession() {
 
 	LOGGER.debug("getSession");
 

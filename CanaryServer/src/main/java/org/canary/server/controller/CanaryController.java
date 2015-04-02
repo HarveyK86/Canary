@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping(value = "canary")
-public final class CanaryController extends AbstractController<Canary> {
+public class CanaryController extends AbstractController<Canary> {
 
     @Autowired
     private CrudService<Canary> service;
@@ -44,9 +44,9 @@ public final class CanaryController extends AbstractController<Canary> {
 
 	try {
 
-	    message = this.getRequestBody(request);
+	    message = super.getRequestBody(request);
 	    canary = this.service.create(message);
-	    response = this.getResponse(canary);
+	    response = super.getResponse(canary);
 
 	} catch (final Exception e) {
 	    response = this.getResponse(e);

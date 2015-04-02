@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public final class CanaryService extends AbstractService<Canary> {
+public class CanaryService extends AbstractService<Canary> {
 
     private static final Logger LOGGER = Logger.getLogger(CanaryService.class);
 
@@ -37,7 +37,7 @@ public final class CanaryService extends AbstractService<Canary> {
     }
 
     @Override
-    public CrudRepository<Canary> getRepository() {
+    public final CrudRepository<Canary> getRepository() {
 
 	LOGGER.debug("getRepository");
 

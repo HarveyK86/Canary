@@ -29,7 +29,7 @@ public abstract class AbstractService<Model> implements CrudService<Model> {
 
     @Override
     @Transactional(readOnly = true)
-    public final Model read(final int id) {
+    public Model read(final int id) {
 
 	LOGGER.debug("read[id=" + id + "]");
 
@@ -38,9 +38,9 @@ public abstract class AbstractService<Model> implements CrudService<Model> {
 
     @Override
     @Transactional
-    public final void update(final Model model) {
+    public void update(final int id, final Model model) {
 
-	LOGGER.debug("update[model=" + model + "]");
+	LOGGER.debug("update[id=" + id + ", model=" + model + "]");
 
 	if (model == null) {
 
@@ -48,12 +48,12 @@ public abstract class AbstractService<Model> implements CrudService<Model> {
 		    "Illegal argument; model cannot be null.");
 	}
 
-	this.repository.update(model);
+	this.repository.update(id, model);
     }
 
     @Override
     @Transactional
-    public final void delete(final int id) {
+    public void delete(final int id) {
 
 	LOGGER.debug("delete[id=" + id + "]");
 

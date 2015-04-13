@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<macker>
+	<ruleset>
+
+		<var name="base-package" value="org.canary.server" />
+		<var name="main-package" value="${base-package}" />
+
+		<ruleset name="Canary Project Rules">
+
+			<pattern name="main" class="${main-package}.**" />
+
+			<ruleset name="Main Source Rules">
+
+				<pattern name="controller" class="${main-package}.controller.**" />
+				<pattern name="model" class="${main-package}.model.**" />
+				<pattern name="repository" class="${main-package}.repository.**" />
+				<pattern name="service" class="${main-package}.service.**" />
+
+				<ruleset name="Controller Rules">
+					<access-rule>
+						<message>The controllers must not access the repository
+							layer. The repository layer must be accessed via the
+							service layer.
+						</message>
+						<deny>
+							<from pattern="controller" />
+							<to pattern="repository" />
+						</deny>
+					</access-rule>
+				</ruleset>
+
+				<ruleset name="Model Package Rules">
+
+					<access-rule>
+						<message>The model classes must not access the
+							controllers.
+						</message>
+						<deny>
+							<from pattern="model" />
+							<to pattern="controller" />
+						</deny>
+					</access-rule>
+
+					<access-rule>
+						<message>The model classes must not access the
+							repository layer.
+						</message>
+						<deny>
+							<from pattern="model" />
+							<to pattern="repository" />
+						</deny>
+					</access-rule>
+
+					<access-rule>
+						<message>The model classes must not access the service
+							layer.
+						</message>
+						<deny>
+							<from pattern="model" />
+							<to pattern="service" />
+						</deny>
+					</access-rule>
+
+				</ruleset>
+
+				<ruleset name="Repository Layer Rules">
+
+					<access-rule>
+						<message>The repository layer must not access the
+							controllers.
+						</message>
+						<deny>
+							<from pattern="repository" />
+							<to pattern="controller" />
+						</deny>
+					</access-rule>
+
+					<access-rule>
+						<message>The repository layer must not access the
+							service layer.
+						</message>
+						<deny>
+							<from pattern="repository" />
+							<to pattern="service" />
+						</deny>
+					</access-rule>
+
+				</ruleset>
+
+				<ruleset name="Service Layer Rules">
+					<access-rule>
+						<message>The service layer must not access the
+							controllers.
+						</message>
+						<deny>
+							<from pattern="service" />
+							<to pattern="controller" />
+						</deny>
+					</access-rule>
+				</ruleset>
+
+				<ruleset name="Logging Rules">
+					<access-rule>
+						<message>The main classes must not use Java logging.
+						</message>
+						<deny>
+							<from pattern="main" />
+							<to class="java.util.logging.**" />
+						</deny>
+					</access-rule>
+				</ruleset>
+				
+				<ruleset name="Miscellaneous Rules">
+					<access-rule>
+						<message>The main classes must not use commons.lang.
+						</message>
+						<deny>
+							<from pattern="main" />
+							<to class="org.apache.commons.lang.**" />
+						</deny>
+					</access-rule>
+				</ruleset>
+
+			</ruleset>
+		</ruleset>
+	</ruleset>
+</macker>

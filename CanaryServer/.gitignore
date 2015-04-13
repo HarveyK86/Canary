@@ -1,6 +1,7 @@
 /bin/
 /build/
 /ivy/
+/macker/
 /pmd/
 /reports/
 /src/main/resources/lib/

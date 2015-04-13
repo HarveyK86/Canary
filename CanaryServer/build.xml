@@ -4,12 +4,14 @@
 	<property name="bin" value="${basedir}/bin" />
 	<property name="build" value="${basedir}/build" />
 	<property name="ivy" value="${basedir}/ivy" />
+	<property name="macker" value="${basedir}/macker" />
 	<property name="pmd" value="${basedir}/pmd" />
 	<property name="output" value="${basedir}/output" />
 	<property name="reports" value="${basedir}/reports" />
 	<property name="src" value="${basedir}/src" />
 
 	<property name="reports.junit" value="${reports}/junit" />
+	<property name="reports.macker" value="${reports}/macker" />
 	<property name="reports.pmd" value="${reports}/pmd" />
 
 	<property name="main" value="${src}/main" />
@@ -34,6 +36,10 @@
 		<fileset dir="${ivy}" includes="**/*.jar" />
 	</path>
 
+	<path id="macker.path">
+		<fileset dir="${macker}" includes="**/*.jar" />
+	</path>
+
 	<path id="pmd.path">
 		<fileset dir="${pmd}" includes="**/*.jar" />
 	</path>
@@ -44,6 +50,8 @@
 
 	<path id="main.path">
 		<pathelement location="${main.bin}" />
+		<pathelement location="${main.config}" />
+		<pathelement location="${basedir}" />
 		<fileset dir="${main.lib}" includes="**/*.jar" />
 	</path>
 
@@ -56,6 +64,7 @@
 	<!-- Targets -->
 	<target name="clean">
 		<delete dir="${test.bin}" />
+		<delete dir="${macker}" />
 		<delete dir="${pmd}" />
 		<delete>
 			<fileset dir="${output}" includes="**/*.log" />
@@ -78,6 +87,11 @@
 
 	<target name="init-ivy" depends="download-ivy">
 		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.path" />
+	</target>
+
+	<target name="resolve-macker" depends="clean, init-ivy">
+		<mkdir dir="${macker}" />
+		<ivy:retrieve pattern="${macker}/[artifact]-[revision].[ext]" conf="macker" />
 	</target>
 
 	<target name="resolve-pmd" depends="clean, init-ivy">
@@ -105,6 +119,29 @@
 	<target name="compile-test" depends="resolve-test, compile-main">
 		<mkdir dir="${test.bin}" />
 		<javac srcdir="${test.java}" destdir="${test.bin}" classpathref="test.path" includeantruntime="false" />
+	</target>
+
+	<!-- Macker -->
+	<target name="no-macker">
+		<property name="skip.macker" value="true" />
+	</target>
+
+	<target name="init-macker" depends="resolve-macker">
+		<taskdef name="macker" classname="net.innig.macker.ant.MackerAntTask" classpathref="macker.path" />
+		<taskdef name="macker-report" classname="net.innig.macker.ant.MackerReportAntTask" classpathref="macker.path" />
+	</target>
+
+	<target name="macker" depends="init-macker, compile-test" unless="skip.macker" description="">
+		<mkdir dir="${reports.macker}" />
+		<macker printThreshold="info" xmlReportFile="${reports.macker}/macker.xml" failOnError="false" angerProperty="macker.failed">
+			<rules dir="${basedir}" includes="macker.xml" />
+			<classes dir="${test.bin}">
+				<include name="**/*.class" />
+			</classes>
+			<classpath refid="macker.path" />
+		</macker>
+		<macker-report xmlReportfile="${reports.macker}/macker.xml" outputFile="${reports.macker}/macker.html" />
+		<fail if="macker.failed" />
 	</target>
 
 	<!-- PMD -->
@@ -144,7 +181,7 @@
 	</target>
 
 	<!-- Build -->
-	<target name="fast" depends="no-pmd, no-junit" />
+	<target name="fast" depends="no-macker, no-pmd, no-junit" />
 
 	<target name="build" depends="compile-main" description="">
 		<mkdir dir="${build}" />
@@ -155,6 +192,6 @@
 		</war>
 	</target>
 
-	<target name="ci-build" depends="pmd, junit, build" description="" />
+	<target name="ci-build" depends="macker, pmd, junit, build" description="" />
 
 </project>

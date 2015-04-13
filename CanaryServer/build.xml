@@ -1,9 +1,10 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="CanaryServer" basedir=".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:jacoco="antlib:org.jacoco.ant" name="CanaryServer" basedir=".">
 
 	<!-- Properties -->
 	<property name="bin" value="${basedir}/bin" />
 	<property name="build" value="${basedir}/build" />
 	<property name="ivy" value="${basedir}/ivy" />
+	<property name="jacoco" value="${basedir}/jacoco" />
 	<property name="macker" value="${basedir}/macker" />
 	<property name="pmd" value="${basedir}/pmd" />
 	<property name="output" value="${basedir}/output" />
@@ -13,6 +14,7 @@
 	<property name="reports.junit" value="${reports}/junit" />
 	<property name="reports.macker" value="${reports}/macker" />
 	<property name="reports.pmd" value="${reports}/pmd" />
+	<property name="reports.jacoco" value="${reports}/jacoco" />
 
 	<property name="main" value="${src}/main" />
 	<property name="test" value="${src}/test" />
@@ -30,6 +32,9 @@
 
 	<property name="ivy.version" value="2.1.0-rc2" />
 	<property name="ivy.url" value="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar" />
+
+	<property name="jacoco.version" value="0.7.2.201409121644" />
+	<property name="jacoco.url" value="http://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/${jacoco.version}/jacoco-${jacoco.version}.zip" />
 
 	<!-- Paths -->
 	<path id="ivy.path">
@@ -75,6 +80,12 @@
 		<delete dir="${test.lib}" />
 	</target>
 
+	<target name="purge" depends="clean">
+		<delete dir="${bin}" />
+		<delete dir="${jacoco}" />
+		<delete dir="${ivy}" />
+	</target>
+
 	<!-- Ivy -->
 	<target name="check-ivy">
 		<available file="${ivy}/ivy-${ivy.version}.jar" property="ivy.found" />
@@ -109,16 +120,37 @@
 		<ivy:retrieve pattern="${test.lib}/[artifact]-[revision].[ext]" conf="test" />
 	</target>
 
+	<!-- JaCoCo -->
+	<target name="check-jacoco">
+		<available file="${jacoco}/lib/jacocoant.jar" property="jacoco.found" />
+	</target>
+
+	<target name="download-jacoco" depends="check-jacoco" unless="jacoco.found">
+		<mkdir dir="${jacoco}" />
+		<get src="${jacoco.url}" dest="${jacoco}/jacoco-${jacoco.version}.zip" usetimestamp="true" />
+		<unzip src="${jacoco}/jacoco-${jacoco.version}.zip" dest="${jacoco}" />
+	</target>
+
+	<target name="init-jacoco" depends="download-jacoco">
+		<taskdef resource="org/jacoco/ant/antlib.xml" uri="antlib:org.jacoco.ant">
+			<classpath path="${jacoco}/lib/jacocoant.jar" />
+		</taskdef>
+	</target>
+
+	<target name="enable-jacoco" depends="init-jacoco">
+		<property name="jacoco.enabled" value="true" />
+	</target>
+
 	<!-- Compile -->
 	<target name="compile-main" depends="resolve-main">
 		<delete dir="${main.bin}" />
 		<mkdir dir="${main.bin}" />
-		<javac srcdir="${main.java}" destdir="${main.bin}" classpathref="main.path" includeantruntime="false" />
+		<javac srcdir="${main.java}" destdir="${main.bin}" classpathref="main.path" includeantruntime="false" debug="true" />
 	</target>
 
 	<target name="compile-test" depends="resolve-test, compile-main">
 		<mkdir dir="${test.bin}" />
-		<javac srcdir="${test.java}" destdir="${test.bin}" classpathref="test.path" includeantruntime="false" />
+		<javac srcdir="${test.java}" destdir="${test.bin}" classpathref="test.path" includeantruntime="false" debug="true" />
 	</target>
 
 	<!-- Macker -->
@@ -168,16 +200,36 @@
 		<property name="skip.junit" value="true" />
 	</target>
 
-	<target name="junit" depends="compile-test" description="">
+	<target name="junit" depends="init-jacoco, compile-test" unless="skip.junit" description="">
 		<mkdir dir="${reports.junit}" />
-		<junit printsummary="yes" haltonfailure="true" fork="true">
-			<classpath refid="junit.path" />
-			<sysproperty key="log4j.configuration" value="file:${basedir}/log4j.properties" />
-			<formatter type="xml" />
-			<batchtest todir="${reports.junit}">
-				<fileset dir="${test.java}" includes="**/*Test.java" excludes="**/Abstract*.java"/>
-			</batchtest>
-		</junit>
+		<jacoco:coverage enabled="${jacoco.enabled}" destfile="${reports.jacoco}/jacoco.exec">
+			<junit printsummary="yes" haltonfailure="true" fork="true">
+				<classpath refid="junit.path" />
+				<sysproperty key="log4j.configuration" value="file:${basedir}/log4j.properties" />
+				<formatter type="xml" />
+				<batchtest todir="${reports.junit}">
+					<fileset dir="${test.java}" includes="**/*Test.java" excludes="**/Abstract*.java"/>
+				</batchtest>
+			</junit>
+		</jacoco:coverage>
+	</target>
+
+	<!-- JaCoCo -->
+	<target name="jacoco" depends="enable-jacoco, junit" unless="skip.junit" description="">
+		<jacoco:report>
+			<executiondata>
+				<file file="${reports.jacoco}/jacoco.exec" />
+			</executiondata>
+			<structure name="Canary">
+				<classfiles>
+					<fileset dir="${main.bin}" />
+				</classfiles>
+				<sourcefiles encoding="UTF-8">
+					<fileset dir="${main.java}" />
+				</sourcefiles>
+			</structure>
+			<html destdir="${reports.jacoco}" />
+		</jacoco:report>
 	</target>
 
 	<!-- Build -->
@@ -192,6 +244,6 @@
 		</war>
 	</target>
 
-	<target name="ci-build" depends="macker, pmd, junit, build" description="" />
+	<target name="ci-build" depends="macker, pmd, jacoco, build" description="" />
 
 </project>

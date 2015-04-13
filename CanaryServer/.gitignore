@@ -1,6 +1,7 @@
 /bin/
 /build/
 /ivy/
+/jacoco/
 /macker/
 /pmd/
 /reports/

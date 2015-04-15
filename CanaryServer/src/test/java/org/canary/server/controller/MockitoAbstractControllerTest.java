@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class MockitoAbstractControllerTest {
 
@@ -36,6 +38,8 @@ public final class MockitoAbstractControllerTest {
     private static final String ID = "1";
     private static final String INVALID_ID = "Invalid ID";
 
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+
     private static final Logger LOGGER = Logger
 	    .getLogger(MockitoAbstractControllerTest.class);
 
@@ -45,6 +49,7 @@ public final class MockitoAbstractControllerTest {
 
 	this.controller = Mockito.mock(AbstractController.class);
 
+	ReflectionTestUtils.setField(this.controller, "clazz", String.class);
 	ReflectionTestUtils.setField(this.controller, "service", this.service);
 
 	Mockito.doCallRealMethod() //
@@ -185,6 +190,64 @@ public final class MockitoAbstractControllerTest {
 
 	Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,
 		response.getStatusCode());
+    }
+
+    // Coverage Tests
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = IllegalArgumentException.class)
+    public void getRequestBodyShouldThrowIllegalArgument() throws IOException {
+
+	Mockito.doCallRealMethod() //
+		.when((AbstractController<String>) this.controller) //
+		.getRequestBody(Matchers.any(HttpServletRequest.class));
+
+	((AbstractController<String>) this.controller).getRequestBody(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = IllegalArgumentException.class)
+    public void getResponseExceptionShouldThrowIllegalArgument() {
+
+	((AbstractController<String>) this.controller)
+		.getResponse((Exception) null);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void getModelShouldThrowIllegalArgument() throws IOException {
+
+	Mockito.doCallRealMethod() //
+		.when((AbstractController<String>) this.controller) //
+		.getModel(Matchers.anyString());
+
+	for (final String json : new String[] { null, StringUtils.EMPTY,
+		WHITESPACE_STRING }) {
+
+	    try {
+
+		((AbstractController<String>) this.controller).getModel(json);
+		Assert.fail();
+
+	    } catch (final IllegalArgumentException e) {
+		LOGGER.debug("Expected illegal argument caught while testing.");
+	    }
+	}
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void getModelShouldNotReturnNull() throws IOException {
+
+	Mockito.doCallRealMethod() //
+		.when((AbstractController<String>) this.controller) //
+		.getModel(Matchers.anyString());
+
+	final String json = JSON_MAPPER.writeValueAsString(MODEL);
+	final String model = ((AbstractController<String>) this.controller)
+		.getModel(json);
+
+	Assert.assertNotNull(model);
     }
 
 }

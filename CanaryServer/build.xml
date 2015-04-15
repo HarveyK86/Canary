@@ -119,7 +119,7 @@
 
 	<target name="resolve-pmd" depends="clean, init-ivy">
 		<mkdir dir="${pmd}" />
-		<ivy:retrieve pattern="${pmd}/[artifcact]-[revision].[ext]" conf="pmd" />
+		<ivy:retrieve pattern="${pmd}/[artifact]-[revision].[ext]" conf="pmd" />
 	</target>
 
 	<target name="resolve-main" depends="clean, init-ivy">

@@ -71,6 +71,14 @@ public final class MockitoAbstractRepositoryTest {
 	this.repository.update(ID, null);
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void updateShouldThrowIllegalState() {
+
+	final Persistable model = this.getModel();
+
+	this.repository.update(INVALID_ID, model);
+    }
+
     @Test
     public void updateShouldExecute() {
 

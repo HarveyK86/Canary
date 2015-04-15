@@ -17,6 +17,7 @@
 	<property name="reports.macker" value="${reports}/macker" />
 	<property name="reports.pmd" value="${reports}/pmd" />
 	<property name="reports.jacoco" value="${reports}/jacoco" />
+	<property name="reports.javadoc" value="${reports}/javadoc" />
 
 	<property name="main" value="${src}/main" />
 	<property name="test" value="${src}/test" />
@@ -264,6 +265,18 @@
 		</jacoco:report>
 	</target>
 
+	<!-- Javadoc -->
+	<target name="no-javadoc">
+		<property name="skip.javadoc" value="true" />
+	</target>
+
+	<target name="javadoc" depends="compile-main" unless="skip.javadoc" description="">
+		<mkdir dir="${reports.javadoc}" />
+		<javadoc sourcepath="${main.java}" destdir="${reports.javadoc}">
+			<classpath refid="main.path" />
+		</javadoc>
+	</target>
+
 	<!-- Database -->
 	<target name="database" depends="require-properties" description="">
 		<sql driver="${database.driver}" url="jdbc:${database.url}" userid="${database.username}" password="${database.password}">
@@ -278,7 +291,7 @@
 	</target>
 
 	<!-- Build -->
-	<target name="fast" depends="no-macker, no-pmd, no-junit" />
+	<target name="fast" depends="no-macker, no-pmd, no-junit, no-javadoc" />
 
 	<target name="build" depends="compile-main" description="">
 		<mkdir dir="${build}" />
@@ -289,6 +302,6 @@
 		</war>
 	</target>
 
-	<target name="ci-build" depends="macker, pmd, enable-jacoco, junit, build, junit-integration, jacoco" description="" />
+	<target name="ci-build" depends="macker, pmd, enable-jacoco, junit, build, junit-integration, jacoco, javadoc" description="" />
 
 </project>

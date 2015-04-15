@@ -1,0 +1,1 @@
+INSERT INTO `canary`.`canary` (`Message`) VALUES ('Hello, World!');

@@ -1,6 +1,8 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:jacoco="antlib:org.jacoco.ant" name="CanaryServer" basedir=".">
 
 	<!-- Properties -->
+	<property file="${basedir}/canary.properties"  />
+
 	<property name="bin" value="${basedir}/bin" />
 	<property name="build" value="${basedir}/build" />
 	<property name="ivy" value="${basedir}/ivy" />
@@ -22,6 +24,7 @@
 	<property name="main.bin" value="${bin}/main" />
 	<property name="main.java" value="${main}/java" />
 	<property name="main.resources" value="${main}/resources" />
+	<property name="main.sql" value="${main}/sql" />
 	<property name="main.config" value="${main.resources}/config" />
 	<property name="main.lib" value="${main.resources}/lib" />
 
@@ -67,6 +70,14 @@
 	</path>
 
 	<!-- Targets -->
+	<target name="check-properties">
+		<available file="${basedir}/canary.properties" property="properties.found" />
+	</target>
+
+	<target name="require-properties" depends="check-properties" unless="properties.found">
+		<fail message="canary.properties required. See canary.properties.template." />
+	</target>
+
 	<target name="clean">
 		<delete dir="${test.bin}" />
 		<delete dir="${macker}" />
@@ -208,14 +219,35 @@
 				<sysproperty key="log4j.configuration" value="file:${basedir}/log4j.properties" />
 				<formatter type="xml" />
 				<batchtest todir="${reports.junit}">
-					<fileset dir="${test.java}" includes="**/*Test.java" excludes="**/Abstract*.java"/>
+					<fileset dir="${test.java}">
+						<include name="**/*Test.java" />
+						<exclude name="**/Abstract*.java"/>
+						<exclude name="**/*IntegrationTest*.java"/>
+					</fileset>
+				</batchtest>
+			</junit>
+		</jacoco:coverage>
+	</target>
+
+	<target name="junit-integration" depends="init-jacoco, compile-test, database" unless="skip.junit" description="">
+		<mkdir dir="${reports.junit}" />
+		<jacoco:coverage enabled="${jacoco.enabled}" destfile="${reports.jacoco}/jacoco.exec">
+			<junit printsummary="yes" haltonfailure="true" fork="true">
+				<classpath refid="junit.path" />
+				<sysproperty key="log4j.configuration" value="file:${basedir}/log4j.properties" />
+				<formatter type="xml" />
+				<batchtest todir="${reports.junit}">
+					<fileset dir="${test.java}">
+						<include name="**/*IntegrationTest*.java"/>
+						<exclude name="**/Abstract*.java"/>
+					</fileset>
 				</batchtest>
 			</junit>
 		</jacoco:coverage>
 	</target>
 
 	<!-- JaCoCo -->
-	<target name="jacoco" depends="enable-jacoco, junit" unless="skip.junit" description="">
+	<target name="jacoco" depends="enable-jacoco, junit, junit-integration" unless="skip.junit" description="">
 		<jacoco:report>
 			<executiondata>
 				<file file="${reports.jacoco}/jacoco.exec" />
@@ -232,6 +264,19 @@
 		</jacoco:report>
 	</target>
 
+	<!-- Database -->
+	<target name="database" depends="require-properties" description="">
+		<sql driver="${database.driver}" url="jdbc:${database.url}" userid="${database.username}" password="${database.password}">
+			<classpath>
+				<pathelement location="${main.lib}/mysql-connector-java-5.1.34.jar" />
+			</classpath>
+			<transaction src="${main.sql}/drop-database.sql" />
+			<transaction src="${main.sql}/create-database.sql" />
+			<transaction src="${main.sql}/tables/canary.sql" />
+			<transaction src="${main.sql}/data.sql" />
+		</sql>
+	</target>
+
 	<!-- Build -->
 	<target name="fast" depends="no-macker, no-pmd, no-junit" />
 
@@ -244,6 +289,6 @@
 		</war>
 	</target>
 
-	<target name="ci-build" depends="macker, pmd, jacoco, build" description="" />
+	<target name="ci-build" depends="macker, pmd, enable-jacoco, junit, build, junit-integration, jacoco" description="" />
 
 </project>

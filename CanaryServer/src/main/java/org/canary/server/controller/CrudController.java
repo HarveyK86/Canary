@@ -10,6 +10,8 @@ public interface CrudController {
 
     ResponseEntity<String> read(final String id);
 
+    ResponseEntity<String> readAll();
+
     ResponseEntity<String> update(final String id,
 	    final HttpServletRequest request);
 

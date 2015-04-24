@@ -60,6 +60,10 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 
 	Mockito.doCallRealMethod() //
 		.when(this.controller) //
+		.readAll();
+
+	Mockito.doCallRealMethod() //
+		.when(this.controller) //
 		.update(Matchers.anyString(), //
 			Matchers.any(HttpServletRequest.class));
 
@@ -123,6 +127,20 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 
 	final ResponseEntity<String> response = this.controller
 		.create(this.request);
+
+	Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,
+		response.getStatusCode());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void readAllShouldReturnINTERNAL_SERVER_ERROR() {
+
+	Mockito.when(this.service //
+		.readAll()) //
+		.thenThrow(Exception.class);
+
+	final ResponseEntity<String> response = this.controller.readAll();
 
 	Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,
 		response.getStatusCode());

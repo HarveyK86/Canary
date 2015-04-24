@@ -1,5 +1,9 @@
 package org.canary.server.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,6 +20,9 @@ public final class MockitoAbstractRepositoryTest {
     @Mock
     private Session session;
 
+    @Mock
+    private Criteria criteria;
+
     private CrudRepository<Persistable> repository;
 
     private static final int ID = 1;
@@ -26,12 +33,17 @@ public final class MockitoAbstractRepositoryTest {
     public void before() {
 
 	final Persistable model = this.getModel();
+	final List<Persistable> models = new ArrayList<Persistable>();
 
 	this.repository = Mockito.mock(AbstractRepository.class);
 
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
 		.read(Matchers.anyInt());
+
+	Mockito.doCallRealMethod() //
+		.when(this.repository) //
+		.readAll();
 
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
@@ -48,6 +60,14 @@ public final class MockitoAbstractRepositoryTest {
 	Mockito.when(this.session //
 		.get(Matchers.any(Class.class), Matchers.eq(ID))) //
 		.thenReturn(model);
+
+	Mockito.when(this.session //
+		.createCriteria(Matchers.any(Class.class))) //
+		.thenReturn(this.criteria);
+
+	Mockito.when(this.criteria //
+		.list()) //
+		.thenReturn(models);
     }
 
     @Test
@@ -64,6 +84,14 @@ public final class MockitoAbstractRepositoryTest {
 	final Persistable model = this.repository.read(INVALID_ID);
 
 	Assert.assertNull(model);
+    }
+
+    @Test
+    public void readAllShouldNotReturnNull() {
+
+	final List<Persistable> models = this.repository.readAll();
+
+	Assert.assertNotNull(models);
     }
 
     @Test(expected = IllegalArgumentException.class)

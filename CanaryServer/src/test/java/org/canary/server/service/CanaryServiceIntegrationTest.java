@@ -1,5 +1,7 @@
 package org.canary.server.service;
 
+import java.util.List;
+
 import org.canary.server.model.Canary;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,6 +24,7 @@ public final class CanaryServiceIntegrationTest {
     public void createReadUpdateAndDeleteShouldExecuteCorrectly() {
 
 	final Canary model;
+	final List<Canary> models;
 
 	Canary other;
 
@@ -36,6 +39,11 @@ public final class CanaryServiceIntegrationTest {
 	Assert.assertNotNull(other);
 	Assert.assertEquals(model.getId(), other.getId());
 	Assert.assertEquals(model.getMessage(), other.getMessage());
+
+	models = this.service.readAll();
+
+	Assert.assertNotNull(models);
+	Assert.assertFalse(models.isEmpty());
 
 	model.setMessage(NEW_MESSAGE);
 	this.service.update(model.getId(), model);

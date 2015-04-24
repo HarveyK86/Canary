@@ -17,6 +17,7 @@
 		<!-- commons -->
 		<dependency org="commons-lang" name="commons-lang" rev="2.6" conf="macker->default" />
 
+		<dependency org="commons-httpclient" name="commons-httpclient" rev="3.1" conf="main->default" />
 		<dependency org="org.apache.commons" name="commons-dbcp2" rev="2.1" conf="main->default" />
 		<dependency org="org.apache.commons" name="commons-lang3" rev="3.3.2" conf="main->default" />
 
@@ -67,6 +68,9 @@
 		<dependency org="org.springframework" name="spring-webmvc" rev="4.1.5.RELEASE" conf="main->default" />
 
 		<dependency org="org.springframework" name="spring-test" rev="4.1.5.RELEASE" conf="test->default" />
+
+		<!-- tuckey -->
+		<dependency org="org.tuckey" name="urlrewritefilter" rev="4.0.4" conf="main->default" />
 
 	</dependencies>
 

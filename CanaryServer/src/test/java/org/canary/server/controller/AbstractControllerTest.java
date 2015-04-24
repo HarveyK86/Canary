@@ -25,6 +25,7 @@ public abstract class AbstractControllerTest<Model> {
 
     @Before
     public final void before() {
+
 	this.controller = this.getController();
 	this.request = this.getRequest();
     }
@@ -68,6 +69,18 @@ public abstract class AbstractControllerTest<Model> {
 	Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,
 		response.getStatusCode());
     }
+
+    @Test
+    public final void readAllShouldReturnOK() {
+
+	final ResponseEntity<String> response = this.controller.readAll();
+
+	Assert.assertEquals(response.getBody(), HttpStatus.OK,
+		response.getStatusCode());
+    }
+
+    @Test
+    public abstract void readAllShouldReturnINTERNAL_SERVER_ERROR();
 
     @Test
     public final void updateIdShouldThrowIllegalArgument() {

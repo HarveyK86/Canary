@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE urlrewrite
+	PUBLIC "-//tuckey.org//DTD UrlRewrite 3.2//EN"
+	"http://www.tuckey.org/res/dtds/urlrewrite3.2.dtd"
+	[<!ENTITY clientUrl "http://localhost:9000">]
+>
+
+<urlrewrite>
+
+	<rule>
+		<from>^/gui/(.*)$</from>
+		<to type="proxy">&clientUrl;/$1</to>
+	</rule>
+
+</urlrewrite>

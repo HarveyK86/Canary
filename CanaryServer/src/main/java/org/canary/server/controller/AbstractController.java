@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -70,6 +71,28 @@ public abstract class AbstractController<Model> implements CrudController {
 	    identifier = Integer.valueOf(id);
 	    model = this.service.read(identifier);
 	    response = this.getResponse(model);
+
+	} catch (final Exception e) {
+	    response = this.getResponse(e);
+	}
+
+	return response;
+    }
+
+    @Override
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<String> readAll() {
+
+	LOGGER.debug("readAll");
+
+	final List<Model> models;
+
+	ResponseEntity<String> response;
+
+	try {
+
+	    models = this.service.readAll();
+	    response = this.getResponse(models);
 
 	} catch (final Exception e) {
 	    response = this.getResponse(e);
@@ -179,6 +202,22 @@ public abstract class AbstractController<Model> implements CrudController {
 	}
 
 	final String json = JSON_MAPPER.writeValueAsString(model);
+
+	return new ResponseEntity<String>(json, HttpStatus.OK);
+    }
+
+    protected final ResponseEntity<String> getResponse(final List<Model> models)
+	    throws JsonProcessingException {
+
+	LOGGER.debug("getResponse[models=" + models + "]");
+
+	if (models == null) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; model cannot be null.");
+	}
+
+	final String json = JSON_MAPPER.writeValueAsString(models);
 
 	return new ResponseEntity<String>(json, HttpStatus.OK);
     }

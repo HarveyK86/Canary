@@ -1,5 +1,7 @@
 package org.canary.server.service;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +36,14 @@ public abstract class AbstractServiceTest<Model> {
 	final Model model = this.service.read(INVALID_ID);
 
 	Assert.assertNull(model);
+    }
+
+    @Test
+    public final void readAllShouldNotReturnNull() {
+
+	final List<Model> models = this.service.readAll();
+
+	Assert.assertNotNull(models);
     }
 
     @Test(expected = IllegalArgumentException.class)

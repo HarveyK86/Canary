@@ -1,8 +1,12 @@
 package org.canary.server.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.canary.server.model.Canary;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
@@ -24,6 +28,9 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
     @Mock
     private Session session;
 
+    @Mock
+    private Criteria criteria;
+
     private CanaryRepository repository;
 
     private static final String WHITESPACE_STRING = " ";
@@ -37,6 +44,7 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 
 	final Canary model = this.getModel();
 	final int id = super.getValidId();
+	final List<Canary> models = new ArrayList<Canary>();
 
 	this.repository = Mockito.mock(CanaryRepository.class);
 
@@ -52,6 +60,10 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
 		.read(Matchers.anyInt());
+
+	Mockito.doCallRealMethod() //
+		.when(this.repository) //
+		.readAll();
 
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
@@ -74,8 +86,16 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 		.thenReturn(model);
 
 	Mockito.when(this.session //
+		.createCriteria(Matchers.any(Class.class))) //
+		.thenReturn(this.criteria);
+
+	Mockito.when(this.session //
 		.save(Matchers.any(Canary.class))) //
 		.thenReturn(id);
+
+	Mockito.when(this.criteria //
+		.list()) //
+		.thenReturn(models);
 
 	return this.repository;
     }

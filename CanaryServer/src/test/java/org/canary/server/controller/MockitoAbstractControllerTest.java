@@ -1,6 +1,7 @@
 package org.canary.server.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,6 +57,10 @@ public final class MockitoAbstractControllerTest {
 	Mockito.doCallRealMethod() //
 		.when(this.controller) //
 		.read(Matchers.anyString());
+
+	Mockito.doCallRealMethod() //
+		.when(this.controller) //
+		.readAll();
 
 	Mockito.doCallRealMethod() //
 		.when(this.controller) //
@@ -109,6 +115,29 @@ public final class MockitoAbstractControllerTest {
 
 	final ResponseEntity<String> response = this.controller
 		.read(INVALID_ID);
+
+	Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,
+		response.getStatusCode());
+    }
+
+    @Test
+    public void readAllShouldReturnOK() {
+
+	final ResponseEntity<String> response = this.controller.readAll();
+
+	Assert.assertEquals(response.getBody(), HttpStatus.OK,
+		response.getStatusCode());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void readAllShouldReturnINTERNAL_SERVER_ERROR() {
+
+	Mockito.when(this.service //
+		.readAll()) //
+		.thenThrow(Exception.class);
+
+	final ResponseEntity<String> response = this.controller.readAll();
 
 	Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,
 		response.getStatusCode());
@@ -203,6 +232,15 @@ public final class MockitoAbstractControllerTest {
 		.getRequestBody(Matchers.any(HttpServletRequest.class));
 
 	((AbstractController<String>) this.controller).getRequestBody(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = IllegalArgumentException.class)
+    public void getResponseModelsShouldThrowIllegalArgument()
+	    throws JsonProcessingException {
+
+	((AbstractController<String>) this.controller)
+		.getResponse((List<String>) null);
     }
 
     @SuppressWarnings("unchecked")

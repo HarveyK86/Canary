@@ -1,5 +1,7 @@
 package org.canary.server.service;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
@@ -34,6 +36,15 @@ public abstract class AbstractService<Model> implements CrudService<Model> {
 	LOGGER.debug("read[id=" + id + "]");
 
 	return this.repository.read(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Model> readAll() {
+
+	LOGGER.debug("readAll");
+
+	return this.repository.readAll();
     }
 
     @Override

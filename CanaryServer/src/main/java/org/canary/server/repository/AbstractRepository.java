@@ -1,8 +1,11 @@
 package org.canary.server.repository;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +44,18 @@ public abstract class AbstractRepository<Model extends Persistable> implements
 	final Session session = this.getSession();
 
 	return (Model) session.get(this.clazz, id);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Model> readAll() {
+
+	LOGGER.debug("readAll");
+
+	final Session session = this.getSession();
+	final Criteria criteria = session.createCriteria(this.clazz);
+
+	return criteria.list();
     }
 
     @Override

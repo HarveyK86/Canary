@@ -37,14 +37,17 @@ public class CanaryController extends AbstractController<Canary> {
 		    "Illegal argument; request cannot be null.");
 	}
 
+	final String json;
 	final String message;
-	final Canary canary;
 
+	Canary canary;
 	ResponseEntity<String> response;
 
 	try {
 
-	    message = super.getRequestBody(request);
+	    json = super.getRequestBody(request);
+	    canary = super.getModel(json);
+	    message = canary.getMessage();
 	    canary = this.service.create(message);
 	    response = super.getResponse(canary);
 

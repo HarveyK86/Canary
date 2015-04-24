@@ -51,6 +51,10 @@ public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
 
 	Mockito.doCallRealMethod() //
 		.when(this.service) //
+		.readAll();
+
+	Mockito.doCallRealMethod() //
+		.when(this.service) //
 		.update(Matchers.anyInt(), Matchers.any(Canary.class));
 
 	Mockito.doCallRealMethod() //

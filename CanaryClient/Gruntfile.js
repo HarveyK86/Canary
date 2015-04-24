@@ -1,12 +1,13 @@
 module.exports = function(grunt) {
 
-	grunt.registerTask('default', ['build']);
-	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.registerTask("default", ["build"]);
+	grunt.loadNpmTasks("grunt-contrib-clean");
+	grunt.loadNpmTasks("grunt-contrib-concat");
+	grunt.loadNpmTasks("grunt-contrib-copy");
+	grunt.loadNpmTasks("grunt-contrib-cssmin");
+	grunt.loadNpmTasks("grunt-contrib-uglify");
+	grunt.loadNpmTasks("grunt-contrib-watch");
+	grunt.loadNpmTasks("grunt-war");
 
 	grunt.initConfig({
 
@@ -23,14 +24,14 @@ module.exports = function(grunt) {
 
 			concat_css: {
 
-				src: ['bower_components/bootstrap/dist/css/bootstrap.css', 'src/css/**/*.css'],
-				dest: 'build/css/canary.css'
+				src: ["bower_components/bootstrap/dist/css/bootstrap.css", "src/css/**/*.css"],
+				dest: "build/css/canary.css"
 			},
 
 			concat_js: {
 
-				src: ['bower_components/angular/angular.js', 'bower_components/angular-resource/angular-resource.js', 'src/js/**/*.js'],
-				dest: 'build/js/canary.js'
+				src: ["bower_components/angular/angular.js", "bower_components/angular-resource/angular-resource.js", "src/js/**/*.js"],
+				dest: "build/js/canary.js"
 			}
 		},
 
@@ -39,7 +40,7 @@ module.exports = function(grunt) {
 			run: {
 
 				files: {
-					'build/css/canary.min.css': ['build/css/canary.css']
+					"build/css/canary.min.css": ["build/css/canary.css"]
 				}
 			}
 		},
@@ -49,7 +50,7 @@ module.exports = function(grunt) {
 			run: {
 
 				files: {
-					'build/js/canary.min.js': ['build/js/canary.js']
+					"build/js/canary.min.js": ["build/js/canary.js"]
 				}
 			}
 		},
@@ -58,16 +59,16 @@ module.exports = function(grunt) {
 
 			copy_html: {
 
-				src: ['src/html/**/*.html'],
-				dest: 'build/',
+				src: ["src/html/**/*.html"],
+				dest: "build/",
 				expand: true,
 				flatten: true
 			},
 
 			copy_fonts: {
 
-				src: ['bower_components/bootstrap/dist/fonts/*'],
-				dest: 'build/fonts/',
+				src: ["bower_components/bootstrap/dist/fonts/*"],
+				dest: "build/fonts/",
 				expand: true,
 				flatten: true
 			}
@@ -77,15 +78,34 @@ module.exports = function(grunt) {
 
 			run: {
 
-				files: ['src/**/*'],
-				tasks: ['concat', 'cssmin', 'uglify', 'copy']
+				files: ["src/**/*"],
+				tasks: ["concat", "cssmin", "uglify", "copy"]
+			}
+		},
+
+		war: {
+
+			run: {
+				options: {
+
+					war_dist_folder: "build",
+					war_name: "canary-client",
+					webxml_welcome: "index.html",
+					webxml_display_name: "Canary Client"
+				},
+				files: [{
+					expand: true,
+					cwd: "build",
+					src: ["**"],
+					dest: ""
+				}]
 			}
 		}
 	});
 
-	grunt.registerTask('build', ['clean', 'concat', 'cssmin', 'uglify', 'copy']);
+	grunt.registerTask("build", ["clean", "concat", "cssmin", "uglify", "copy", "war"]);
 
-	grunt.renameTask('watch', 'run_watch');
-	grunt.registerTask('watch', ['build', 'run_watch']);
+	grunt.renameTask("watch", "run_watch");
+	grunt.registerTask("watch", ["build", "run_watch"]);
 	
 };

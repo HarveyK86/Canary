@@ -11,25 +11,32 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
         clean: {
-            run: {
+            clean: {
                 src: ["build/**"]
+            },
+            prune: {
+                src: ["build/coffee/**"]
+            }
+        },
+        concat: {
+            coffee: {
+                src: ["src/coffee/**/*.coffee"],
+                dest: "build/coffee/canary.coffee"
+            },
+            css: {
+                src: ["bower_components/bootstrap/dist/css/bootstrap.css", "src/css/**/*.css"],
+                dest: "build/css/canary.css"
+            },
+            js: {
+                src: ["bower_components/angular/angular.js", "bower_components/angular-resource/angular-resource.js", "build/js/canary.js"],
+                dest: "build/js/canary.js"
             }
         },
         coffee: {
             run: {
                 files: {
-                    "build/js/canary.coffee.js": ["src/coffee/**/*.coffee"]
+                    "build/js/canary.js": ["build/coffee/canary.coffee"]
                 }
-            }
-        },
-        concat: {
-            concat_css: {
-                src: ["bower_components/bootstrap/dist/css/bootstrap.css", "src/css/**/*.css"],
-                dest: "build/css/canary.css"
-            },
-            concat_js: {
-                src: ["bower_components/angular/angular.js", "bower_components/angular-resource/angular-resource.js", "build/js/canary.coffee.js"],
-                dest: "build/js/canary.js"
             }
         },
         cssmin: {
@@ -47,13 +54,13 @@ module.exports = function(grunt) {
             }
         },
         copy: {
-            copy_html: {
+            html: {
                 src: ["src/html/**/*.html"],
                 dest: "build/",
                 expand: true,
                 flatten: true
             },
-            copy_fonts: {
+            fonts: {
                 src: ["bower_components/bootstrap/dist/fonts/*"],
                 dest: "build/fonts/",
                 expand: true,
@@ -61,9 +68,17 @@ module.exports = function(grunt) {
             }
         },
         run_watch: {
-            run: {
-                files: ["src/**/*"],
-                tasks: ["coffee", "concat", "cssmin", "uglify", "copy"]
+            coffee: {
+                files: ["src/coffee/**/*.coffee"],
+                tasks: ["concat:coffee", "coffee", "concat:js", "uglify"]
+            },
+            css: {
+                files: ["src/css/**/*.css"],
+                tasks: ["concat:css", "cssmin"]
+            },
+            html: {
+                files: ["src/html/**/*.html"],
+                tasks: ["copy:html"]
             }
         },
         war: {
@@ -83,7 +98,7 @@ module.exports = function(grunt) {
             }
         }
     });
-    grunt.registerTask("build", ["clean", "coffee", "concat", "cssmin", "uglify", "copy", "war"]);
+    grunt.registerTask("build", ["clean:clean", "concat:coffee", "coffee", "concat:js", "uglify", "concat:css", "cssmin", "copy", "clean:prune", "war"]);
     grunt.renameTask("watch", "run_watch");
     grunt.registerTask("watch", ["build", "run_watch"]);
 };

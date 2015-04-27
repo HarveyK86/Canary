@@ -1,4 +1,4 @@
-window.Canary = () ->
+Canary = () ->
     self = this
 
     self.id

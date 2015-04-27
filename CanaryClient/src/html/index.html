@@ -1,145 +1,65 @@
 <!DOCTYPE html>
 <html ng-app="org.canary">
-
-	<head>
-
-		<title>Canary</title>
-		<link rel="stylesheet" href="css/canary.min.css">
-	</head>
-	<body>
-
-		<div class="container">
-
-			&nbsp;
-
-			<div ng-controller="CanaryListController as canaryListController"
-				 class="panel panel-default">
-
-				<div class="panel-heading">
-
-					<div class="row">
-
-						<div class="col-xs-6">
-							<span class="canaryListControllerTitle">
-								Canary
-							</span>
-						</div>
-
-						<div class="col-xs-6 text-right">
-
-							<button type="button"
-									ng-disabled="canaryListController.isAddPanelVisible()"
-									ng-click="canaryListController.showAddPanel()"
-									class="btn {{ canaryListController.isAddPanelVisible() ? 'btn-disabled' : 'btn-info' }} btn-md">
-								<span class="glyphicon glyphicon-plus" />
-							</button>
-						</div>
-					</div>
-				</div>
-
-				<div class="panel-body">
-
-					<div ng-if="canaryListController.isAddPanelVisible()"
-						 class="panel panel-warning">
-
-						<div class="panel-heading {{ canaryListController.isNewMessageValid() ? '' : 'has-feedback has-error' }}">
-
-							<div class="row">
-
-								<div class="col-xs-6">
-									<input type="text"
-										   ng-model="add.message"
-										   class="form-control" />
-								</div>
-
-								<div class="col-xs-6 text-right">
-
-									<div class="btn-group">
-
-										<button type="button"
-												ng-disabled="!canaryListController.isNewMessageValid()"
-												ng-click="canaryListController.create(add.message); canaryListController.hideAddPanel()"
-												class="btn {{ canaryListController.isNewMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
-											<span class="glyphicon glyphicon-ok" />
-										</button>
-
-										<button type="button"
-												ng-click="canaryListController.hideAddPanel()"
-												class="btn btn-danger btn-md">
-											<span class="glyphicon glyphicon-remove" />
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div ng-repeat="canary in canaries"
-						 class="panel panel-info">
-
-						<div ng-controller="CanaryController as canaryController"
-							 class="panel-heading {{ canaryController.isUpdatedMessageValid() ? '' : 'has-feedback has-error' }}">
-
-							<div class="row">
-
-								<div class="col-xs-6">
-
-									<input type="text"
-										   ng-if="canaryController.isEditFieldVisible()"
-										   ng-model="edit.message"
-										   class="form-control" />
-
-									<div ng-if="!canaryController.isEditFieldVisible()"
-										  class="canaryMessage">
-										{{ canary.getMessage() }}
-									</div>
-								</div>
-
-								<div class="col-xs-6 text-right">
-
-									<div class="btn-group">
-
-										<button type="button"
-												ng-if="canaryController.isEditFieldVisible()"
-												ng-disabled="!canaryController.isUpdatedMessageValid()"
-												ng-click="canaryListController.update(canary.getId(), edit.message); canaryController.hideEditField()"
-												class="btn {{ canaryController.isUpdatedMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
-											<span class="glyphicon glyphicon-ok" />
-										</button>
-
-										<button type="button"
-												ng-if="!canaryController.isEditFieldVisible()"
-												ng-click="canaryController.showEditField(canary.getMessage())"
-												class="btn btn-warning btn-md">
-											<span class="glyphicon glyphicon-edit" />
-										</button>
-
-										<button type="button"
-												ng-if="canaryController.isEditFieldVisible()"
-												ng-click="canaryController.hideEditField()"
-												class="btn btn-danger btn-md">
-											<span class="glyphicon glyphicon-remove" />
-										</button>
-
-										<button type="button"
-												ng-if="!canaryController.isEditFieldVisible()"
-												ng-click="canaryListController.delete(canary)"
-												class="btn btn-danger btn-md">
-											<span class="glyphicon glyphicon-trash" />
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="panel-footer">
-					&nbsp;
-				</div>
-			</div>
-		</div>
-
-		<script type="text/javascript" src="js/canary.min.js"></script>
-	</body>
+    <head>
+        <title>Canary</title>
+        <link rel="stylesheet" href="css/canary.min.css">
+    </head>
+    <body>
+        <div class="container">
+            &nbsp;
+            <div ng-controller="CanaryListController as canaryListController" class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <span class="canaryListControllerTitle">Canary</span>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <button type="button" ng-disabled="canaryListController.isAddPanelVisible()" ng-click="canaryListController.showAddPanel()" class="btn {{ canaryListController.isAddPanelVisible() ? 'btn-disabled' : 'btn-info' }} btn-md"><span class="glyphicon glyphicon-plus" /></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div ng-if="canaryListController.isAddPanelVisible()" class="panel panel-warning">
+                        <div class="panel-heading {{ canaryListController.isNewMessageValid() ? '' : 'has-feedback has-error' }}">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <input type="text" ng-model="add.message" class="form-control" />
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <div class="btn-group">
+                                        <button type="button" ng-disabled="!canaryListController.isNewMessageValid()" ng-click="canaryListController.create(add.message); canaryListController.hideAddPanel()" class="btn {{ canaryListController.isNewMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md"><span class="glyphicon glyphicon-ok" /></button>
+                                        <button type="button" ng-click="canaryListController.hideAddPanel()" class="btn btn-danger btn-md"><span class="glyphicon glyphicon-remove" /></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-repeat="canary in canaries" class="panel panel-info">
+                        <div ng-controller="CanaryController as canaryController" class="panel-heading {{ canaryController.isUpdatedMessageValid() ? '' : 'has-feedback has-error' }}">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <input type="text" ng-if="canaryController.isEditFieldVisible()" ng-model="edit.message" class="form-control" />
+                                    <div ng-if="!canaryController.isEditFieldVisible()" class="canaryMessage">
+                                        {{ canary.getMessage() }}
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <div class="btn-group">
+                                        <button type="button" ng-if="canaryController.isEditFieldVisible()" ng-disabled="!canaryController.isUpdatedMessageValid()" ng-click="canaryListController.update(canary.getId(), edit.message); canaryController.hideEditField()" class="btn {{ canaryController.isUpdatedMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md"><span class="glyphicon glyphicon-ok" /></button>
+                                        <button type="button" ng-if="!canaryController.isEditFieldVisible()" ng-click="canaryController.showEditField(canary.getMessage())" class="btn btn-warning btn-md"><span class="glyphicon glyphicon-edit" /></button>
+                                        <button type="button" ng-if="canaryController.isEditFieldVisible()" ng-click="canaryController.hideEditField()" class="btn btn-danger btn-md"><span class="glyphicon glyphicon-remove" /></button>
+                                        <button type="button" ng-if="!canaryController.isEditFieldVisible()" ng-click="canaryListController.delete(canary)" class="btn btn-danger btn-md"><span class="glyphicon glyphicon-trash" /></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    &nbsp;
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="js/canary.min.js"></script>
+    </body>
 </html>

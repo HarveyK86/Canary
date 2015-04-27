@@ -34,7 +34,7 @@
                             </div>
                         </div>
                     </div>
-                    <div ng-repeat="canary in canaries" class="panel panel-info">
+                    <div ng-repeat="canary in canaries | orderBy:'-getId()'" class="panel panel-info">
                         <div ng-controller="CanaryController as canaryController" class="panel-heading {{ canaryController.isUpdatedMessageValid() ? '' : 'has-feedback has-error' }}">
                             <div class="row">
                                 <div class="col-xs-6">

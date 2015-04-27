@@ -27,7 +27,7 @@ controller = ($scope, canaryRepository) ->
 
     self.readAll = () ->
         canaryRepository.readAll((results) ->
-            $scope.canaries = results.reverse() )
+            $scope.canaries = results)
 
     self.update = (canaryId, message) ->
         canaryRepository.update(canaryId, message, () ->

@@ -18,7 +18,7 @@ controller = ($scope) ->
         self.editFieldVisible
 
     self.isUpdatedMessageValid = () ->
-        $scope.edit.message ! = null && $scope.edit.message ! = ""
+        $scope.edit.message != null && $scope.edit.message != ""
 
     showEditField: self.showEditField
     hideEditField: self.hideEditField

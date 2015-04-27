@@ -19,7 +19,7 @@ controller = ($scope, canaryRepository) ->
         self.addPanelVisible
 
     self.isNewMessageValid = () ->
-        $scope.add.message ! = null && $scope.add.message ! = ""
+        $scope.add.message != null && $scope.add.message != ""
 
     self.create = (message) ->
         canaryRepository.create(message, () ->

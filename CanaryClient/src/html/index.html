@@ -91,7 +91,7 @@
 
 									<div ng-if="!canaryController.isEditFieldVisible()"
 										  class="canaryMessage">
-										{{ canary.message }}
+										{{ canary.getMessage() }}
 									</div>
 								</div>
 
@@ -102,14 +102,14 @@
 										<button type="button"
 												ng-if="canaryController.isEditFieldVisible()"
 												ng-disabled="!canaryController.isUpdatedMessageValid()"
-												ng-click="canaryListController.update(canary.id, edit.message); canaryController.hideEditField()"
+												ng-click="canaryListController.update(canary.getId(), edit.message); canaryController.hideEditField()"
 												class="btn {{ canaryController.isUpdatedMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
 											<span class="glyphicon glyphicon-ok" />
 										</button>
 
 										<button type="button"
 												ng-if="!canaryController.isEditFieldVisible()"
-												ng-click="canaryController.showEditField(canary.message)"
+												ng-click="canaryController.showEditField(canary.getMessage())"
 												class="btn btn-warning btn-md">
 											<span class="glyphicon glyphicon-edit" />
 										</button>

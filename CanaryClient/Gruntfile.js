@@ -2,6 +2,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask("default", ["build"]);
 	grunt.loadNpmTasks("grunt-contrib-clean");
+	grunt.loadNpmTasks("grunt-contrib-coffee");
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-copy");
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
@@ -20,6 +21,16 @@ module.exports = function(grunt) {
 			}
 		},
 
+		coffee: {
+
+			run: {
+
+				files: {
+					"build/js/canary.coffee.js": ["src/coffee/**/*.coffee"]
+				}
+			}
+		},
+
 		concat: {
 
 			concat_css: {
@@ -30,7 +41,7 @@ module.exports = function(grunt) {
 
 			concat_js: {
 
-				src: ["bower_components/angular/angular.js", "bower_components/angular-resource/angular-resource.js", "src/js/**/*.js"],
+				src: ["bower_components/angular/angular.js", "bower_components/angular-resource/angular-resource.js", "build/js/canary.coffee.js"],
 				dest: "build/js/canary.js"
 			}
 		},
@@ -79,7 +90,7 @@ module.exports = function(grunt) {
 			run: {
 
 				files: ["src/**/*"],
-				tasks: ["concat", "cssmin", "uglify", "copy"]
+				tasks: ["coffee", "concat", "cssmin", "uglify", "copy"]
 			}
 		},
 
@@ -103,7 +114,7 @@ module.exports = function(grunt) {
 		}
 	});
 
-	grunt.registerTask("build", ["clean", "concat", "cssmin", "uglify", "copy", "war"]);
+	grunt.registerTask("build", ["clean", "coffee", "concat", "cssmin", "uglify", "copy", "war"]);
 
 	grunt.renameTask("watch", "run_watch");
 	grunt.registerTask("watch", ["build", "run_watch"]);

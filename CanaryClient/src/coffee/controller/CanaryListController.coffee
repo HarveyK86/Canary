@@ -37,8 +37,6 @@ controller = ($scope, canaryRepository) ->
         canaryRepository.delete(canary.getId(), () ->
             self.readAll() )
 
-    self.readAll()
-
     showAddPanel: self.showAddPanel
     hideAddPanel: self.hideAddPanel
     isAddPanelVisible: self.isAddPanelVisible

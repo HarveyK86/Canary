@@ -3,7 +3,7 @@ module = angular.module("org.canary.repository")
 repository = ($resource) ->
     self = this
 
-    self.resource = $resource("http://localhost:8080/canary-server/canary/:id", id: "@id")
+    self.resource = $resource("/canary-server/canary/:id", id: "@id")
 
     self.create = (message, callback) ->
         canary = new self.resource()

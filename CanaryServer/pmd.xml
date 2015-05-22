@@ -147,7 +147,6 @@
 	<rule ref="rulesets/imports.xml/ImportFromSamePackage" />
 	<rule ref="rulesets/junit.xml/JUnitStaticSuite" />
 	<rule ref="rulesets/junit.xml/JUnitSpelling" />
-	<rule ref="rulesets/junit.xml/TestClassWithoutTestCases" />
 	<rule ref="rulesets/junit.xml/UnnecessaryBooleanAssertion" />
 	<rule ref="rulesets/junit.xml/UseAssertEqualsInsteadOfAssertTrue" />
 	<rule ref="rulesets/junit.xml/UseAssertSameInsteadOfAssertTrue" />

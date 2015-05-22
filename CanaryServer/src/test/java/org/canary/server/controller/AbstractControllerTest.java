@@ -160,4 +160,8 @@ public abstract class AbstractControllerTest<Model> {
 		response.getStatusCode());
     }
 
+    public final int getValidId() {
+	return Integer.valueOf(ID);
+    }
+
 }

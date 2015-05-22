@@ -2,14 +2,99 @@
 <!DOCTYPE urlrewrite
 	PUBLIC "-//tuckey.org//DTD UrlRewrite 3.2//EN"
 	"http://www.tuckey.org/res/dtds/urlrewrite3.2.dtd"
-	[<!ENTITY clientUrl "http://localhost:9000">]
->
+	[<!ENTITY localhost "http://localhost:9000">
+	 <!ENTITY client "canary-client">]>
 
 <urlrewrite>
 
+	<!-- Welcome File -->
 	<rule>
-		<from>^/gui/(.*)$</from>
-		<to type="proxy">&clientUrl;/$1</to>
+		<from>^/$</from>
+		<to type="permanent-redirect">%{context-path}/index</to>
+	</rule>
+
+	<!-- Login Page -->
+	<rule>
+		<condition type="server-name">localhost</condition>
+		<from>^/login(.*)$</from>
+		<to type="proxy">&localhost;/login.html$1</to>
+	</rule>
+
+	<rule>
+		<from>^/login(.*)$</from>
+		<to type="proxy">%{scheme}://%{server-name}:%{port}/&client;/login.html$1</to>
+	</rule>
+
+	<!-- Index Page -->
+	<rule>
+		<condition type="server-name">localhost</condition>
+		<from>^/index(.*)$</from>
+		<to type="proxy">&localhost;/index.html$1</to>
+	</rule>
+
+	<rule>
+		<from>^/index(.*)$</from>
+		<to type="proxy">%{scheme}://%{server-name}:%{port}/&client;/index.html$1</to>
+	</rule>
+
+	<!-- CSS -->
+	<rule>
+		<condition type="server-name">localhost</condition>
+		<from>^/css/(.*)$</from>
+		<to type="proxy">&localhost;/css/$1</to>
+	</rule>
+
+	<rule>
+		<from>^/css/(.*)$</from>
+		<to type="proxy">%{scheme}://%{server-name}:%{port}/&client;/css/$1</to>
+	</rule>
+
+	<!--  Fonts -->
+	<rule>
+		<condition type="server-name">localhost</condition>
+		<from>^/fonts/(.*)$</from>
+		<to type="proxy">&localhost;/fonts/$1</to>
+	</rule>
+
+	<rule>
+		<from>^/fonts/(.*)$</from>
+		<to type="proxy">%{scheme}://%{server-name}:%{port}/&client;/fonts/$1</to>
+	</rule>
+
+	<!--  JavaScript -->
+	<rule>
+		<condition type="server-name">localhost</condition>
+		<from>^/js/(.*)$</from>
+		<to type="proxy">&localhost;/js/$1</to>
+	</rule>
+
+	<rule>
+		<from>^/js/(.*)$</from>
+		<to type="proxy">%{scheme}://%{server-name}:%{port}/&client;/js/$1</to>
+	</rule>
+
+	<!--  Templates -->
+	<rule>
+		<condition type="server-name">localhost</condition>
+		<from>^/tpl/(.*)$</from>
+		<to type="proxy">&localhost;/tpl/$1</to>
+	</rule>
+
+	<rule>
+		<from>^/tpl/(.*)$</from>
+		<to type="proxy">%{scheme}://%{server-name}:%{port}/&client;/tpl/$1</to>
+	</rule>
+
+	<!-- Security -->
+	<rule>
+		<condition type="server-name">localhost</condition>
+		<from>^/secure/(.*)$</from>
+		<to type="proxy">&localhost;/$1</to>
+	</rule>
+
+	<rule>
+		<from>^/secure/(.*)$</from>
+		<to type="proxy">%{scheme}://%{server-name}:%{port}/&client;/$1</to>
 	</rule>
 
 </urlrewrite>

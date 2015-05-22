@@ -52,7 +52,7 @@ public class CanaryController extends AbstractController<Canary> {
 	    response = super.getResponse(canary);
 
 	} catch (final Exception e) {
-	    response = this.getResponse(e);
+	    response = super.getResponse(e);
 	}
 
 	return response;

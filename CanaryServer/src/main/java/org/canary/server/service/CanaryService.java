@@ -6,16 +6,17 @@ import org.canary.server.model.Canary;
 import org.canary.server.repository.CanaryRepository;
 import org.canary.server.repository.CrudRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CanaryService extends AbstractService<Canary> {
 
-    private static final Logger LOGGER = Logger.getLogger(CanaryService.class);
-
     @Autowired
     private CanaryRepository repository;
+
+    private static final Logger LOGGER = Logger.getLogger(CanaryService.class);
 
     private CanaryService() {
 	super();
@@ -23,7 +24,10 @@ public class CanaryService extends AbstractService<Canary> {
 
     @Override
     @Transactional
-    public Canary create(final String message) {
+    @PreAuthorize("hasAuthority('USER')")
+    public Canary create(final Object... args) {
+
+	final String message = (String) args[0];
 
 	LOGGER.debug("create[message=" + message + "]");
 

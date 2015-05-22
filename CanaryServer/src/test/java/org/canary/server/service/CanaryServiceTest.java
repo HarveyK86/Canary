@@ -14,7 +14,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
 
     @Mock
@@ -22,7 +21,6 @@ public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
 
     private CanaryService service;
 
-    private static final Canary MODEL = new Canary();
     private static final String WHITESPACE_STRING = " ";
     private static final String MESSAGE = "Message";
 
@@ -33,6 +31,7 @@ public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
     public CrudService<Canary> getService() {
 
 	final int id = super.getValidId();
+	final Canary canary = this.getModel();
 
 	this.service = Mockito.mock(CanaryService.class);
 
@@ -55,7 +54,8 @@ public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
 
 	Mockito.doCallRealMethod() //
 		.when(this.service) //
-		.update(Matchers.anyInt(), Matchers.any(Canary.class));
+		.update(Matchers.anyInt(), //
+			Matchers.any(Canary.class));
 
 	Mockito.doCallRealMethod() //
 		.when(this.service) //
@@ -63,11 +63,11 @@ public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
 
 	Mockito.when(this.repository //
 		.read(Matchers.eq(id))) //
-		.thenReturn(MODEL);
+		.thenReturn(canary);
 
 	Mockito.when(this.repository //
 		.create(Matchers.anyString())) //
-		.thenReturn(MODEL);
+		.thenReturn(canary);
 
 	return this.service;
     }
@@ -92,20 +92,21 @@ public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
     @Test
     public void createShouldNotReturnNull() {
 
-	final Canary model = this.service.create(MESSAGE);
+	final Canary canary = this.service.create(MESSAGE);
 
-	Assert.assertNotNull(model);
+	Assert.assertNotNull(canary);
     }
 
     @Override
     public Canary getModel() {
 
 	final int id = super.getValidId();
-	final Canary model = new Canary();
+	final Canary canary = new Canary();
 
-	model.setId(id);
+	canary.setId(id);
+	canary.setMessage(MESSAGE);
 
-	return model;
+	return canary;
     }
 
 }

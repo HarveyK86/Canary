@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import org.canary.server.repository.Persistable;
 
 @Entity
-@Table(name = "Canary")
+@Table(name = "canary")
 public final class Canary implements Persistable {
 
     @Id

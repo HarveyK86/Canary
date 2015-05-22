@@ -19,7 +19,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 
     @Mock
@@ -42,9 +41,9 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
     @Override
     public CrudRepository<Canary> getRepository() {
 
-	final Canary model = this.getModel();
+	final Canary canary = this.getModel();
 	final int id = super.getValidId();
-	final List<Canary> models = new ArrayList<Canary>();
+	final List<Canary> canaries = new ArrayList<Canary>();
 
 	this.repository = Mockito.mock(CanaryRepository.class);
 
@@ -67,7 +66,8 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
-		.update(Matchers.anyInt(), Matchers.any(Canary.class));
+		.update(Matchers.anyInt(), //
+			Matchers.any(Canary.class));
 
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
@@ -82,8 +82,9 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 		.thenReturn(this.session);
 
 	Mockito.when(this.session //
-		.get(Matchers.any(Class.class), Matchers.eq(id))) //
-		.thenReturn(model);
+		.get(Matchers.any(Class.class), //
+			Matchers.eq(id))) //
+		.thenReturn(canary);
 
 	Mockito.when(this.session //
 		.createCriteria(Matchers.any(Class.class))) //
@@ -95,7 +96,7 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 
 	Mockito.when(this.criteria //
 		.list()) //
-		.thenReturn(models);
+		.thenReturn(canaries);
 
 	return this.repository;
     }
@@ -120,20 +121,21 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
     @Test
     public void createShouldNotReturnNull() {
 
-	final Canary model = this.repository.create(MESSAGE);
+	final Canary canary = this.repository.create(MESSAGE);
 
-	Assert.assertNotNull(model);
+	Assert.assertNotNull(canary);
     }
 
     @Override
     public Canary getModel() {
 
 	final int id = super.getValidId();
-	final Canary model = new Canary();
+	final Canary canary = new Canary();
 
-	model.setId(id);
+	canary.setId(id);
+	canary.setMessage(MESSAGE);
 
-	return model;
+	return canary;
     }
 
 }

@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.canary.server.repository.CrudRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 public abstract class AbstractService<Model> implements CrudService<Model> {
@@ -31,6 +32,7 @@ public abstract class AbstractService<Model> implements CrudService<Model> {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('USER')")
     public Model read(final int id) {
 
 	LOGGER.debug("read[id=" + id + "]");
@@ -40,6 +42,7 @@ public abstract class AbstractService<Model> implements CrudService<Model> {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('USER')")
     public List<Model> readAll() {
 
 	LOGGER.debug("readAll");
@@ -49,6 +52,7 @@ public abstract class AbstractService<Model> implements CrudService<Model> {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('USER')")
     public void update(final int id, final Model model) {
 
 	LOGGER.debug("update[id=" + id + ", model=" + model + "]");
@@ -64,6 +68,7 @@ public abstract class AbstractService<Model> implements CrudService<Model> {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('USER')")
     public void delete(final int id) {
 
 	LOGGER.debug("delete[id=" + id + "]");

@@ -4,10 +4,20 @@ database.driver=
 # e.g. mysql://localhost:3306
 database.url=
 
-# canary
+# database
 database.name=
 database.username=
 database.password=
 
+admin.username=
+admin.password=
+
 # e.g. org.hibernate.dialect.MySQL5Dialect
 hibernate.dialect=
+
+# e.g. angularCSRFFilter, angularCSRFTokenRepository
+csrf.filter=
+csrf.repository=
+
+# e.g. logs
+logging.directory=

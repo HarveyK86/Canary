@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html ng-app="org.canary">
+    <head>
+        <title>Login</title>
+        <link rel="stylesheet" href="css/canary.min.css">
+    </head>
+    <body>
+        <div class="container">
+            <br />
+            <div ng-controller="LoginController as loginController" class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="canaryTitle">Login</span>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-3"></div>
+                        <div class="col-xs-6">
+                            <div ng-view></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-3 text-right">
+                            <div class="canaryPanelText">
+                                Username
+                            </div>
+                        </div>
+                        <div class="col-xs-6 {{ loginController.isUsernameValid() ? '' : 'has-feedback has-error' }}">
+                            <input type="text" ng-model="login.username" class="form-control" />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-3 text-right">
+                            <div class="canaryPanelText">
+                                Password
+                            </div>
+                        </div>
+                        <div class="col-xs-6 {{ loginController.isPasswordValid() ? '' : 'has-feedback has-error' }}">
+                            <input type="password" ng-model="login.password" class="form-control" />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-3"></div>
+                        <div class="col-xs-6">
+                            <button type="button" ng-disabled="!loginController.isLoginValid()" ng-click="loginController.login(login.username, login.password)" class="col-xs-12 btn {{ loginController.isLoginValid() ? 'btn-success' : 'btn-disabled' }} btn-md"><span class="glyphicon glyphicon-log-in" /></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <br />
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="js/canary.js"></script>
+    </body>
+</html>

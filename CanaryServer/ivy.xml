@@ -69,6 +69,10 @@
 
 		<dependency org="org.springframework" name="spring-test" rev="4.1.5.RELEASE" conf="test->default" />
 
+		<!-- spring security -->
+		<dependency org="org.springframework.security" name="spring-security-web" rev="4.0.1.RELEASE" conf="main->default" />
+		<dependency org="org.springframework.security" name="spring-security-config" rev="4.0.1.RELEASE" conf="main->default" />
+
 		<!-- tuckey -->
 		<dependency org="org.tuckey" name="urlrewritefilter" rev="4.0.4" conf="main->default" />
 

@@ -21,7 +21,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(MockitoJUnitRunner.class)
-@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 
     @Mock
@@ -35,7 +34,7 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 
     private CanaryController controller;
 
-    private static final Canary MODEL = new Canary();
+    private static final Canary CANARY = new Canary();
 
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
@@ -73,7 +72,7 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 
 	Mockito.when(this.service //
 		.read(Matchers.anyInt())) //
-		.thenReturn(MODEL);
+		.thenReturn(CANARY);
 
 	try {
 
@@ -81,7 +80,7 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 		    .getReader()) //
 		    .thenReturn(this.reader);
 
-	    json = JSON_MAPPER.writeValueAsString(MODEL);
+	    json = JSON_MAPPER.writeValueAsString(CANARY);
 
 	    Mockito.when(this.reader //
 		    .readLine()) //
@@ -109,7 +108,7 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 
 	Mockito.when(this.service //
 		.create(Matchers.anyString())) //
-		.thenReturn(MODEL);
+		.thenReturn(CANARY);
 
 	final ResponseEntity<String> response = this.controller
 		.create(this.request);

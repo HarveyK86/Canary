@@ -28,7 +28,10 @@ module.exports = function(grunt) {
                 dest: "build/css/canary.css"
             },
             js: {
-                src: ["bower_components/angular/angular.js", "bower_components/angular-resource/angular-resource.js", "build/js/canary.js"],
+                src: ["bower_components/angular/angular.js",
+                      "bower_components/angular-resource/angular-resource.js",
+                      "bower_components/angular-route/angular-route.js",
+                      "build/js/canary.js"],
                 dest: "build/js/canary.js"
             }
         },
@@ -55,8 +58,14 @@ module.exports = function(grunt) {
         },
         copy: {
             html: {
-                src: ["src/html/**/*.html"],
+                src: ["src/html/*.html"],
                 dest: "build/",
+                expand: true,
+                flatten: true
+            },
+            tpl: {
+                src: ["src/html/tpl/*.tpl.html"],
+                dest: "build/tpl/",
                 expand: true,
                 flatten: true
             },
@@ -77,8 +86,12 @@ module.exports = function(grunt) {
                 tasks: ["concat:css", "cssmin"]
             },
             html: {
-                files: ["src/html/**/*.html"],
+                files: ["src/html/*.html"],
                 tasks: ["copy:html"]
+            },
+            tpl: {
+                files: ["src/html/tpl/*.tpl.html"],
+                tasks: ["copy:tpl"]
             }
         },
         war: {

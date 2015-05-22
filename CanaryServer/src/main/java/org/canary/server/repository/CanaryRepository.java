@@ -16,7 +16,6 @@ public class CanaryRepository extends AbstractRepository<Canary> {
 	super();
     }
 
-    @Override
     public Canary create(final String message) {
 
 	LOGGER.debug("create[message=" + message + "]");

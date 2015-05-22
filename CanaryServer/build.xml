@@ -20,6 +20,7 @@
 	<property name="reports.javadoc" value="${reports}/javadoc" />
 
 	<property name="main" value="${src}/main" />
+	<property name="util" value="${src}/util" />
 	<property name="test" value="${src}/test" />
 
 	<property name="main.bin" value="${bin}/main" />
@@ -28,6 +29,9 @@
 	<property name="main.sql" value="${main}/sql" />
 	<property name="main.config" value="${main.resources}/config" />
 	<property name="main.lib" value="${main.resources}/lib" />
+
+	<property name="util.bin" value="${bin}/util" />
+	<property name="util.java" value="${util}/java" />
 
 	<property name="test.bin" value="${bin}/test" />
 	<property name="test.java" value="${test}/java" />
@@ -64,6 +68,11 @@
 		<fileset dir="${main.lib}" includes="**/*.jar" />
 	</path>
 
+	<path id="util.path">
+		<path refid="main.path" />
+		<pathelement location="${util.bin}" />
+	</path>
+
 	<path id="test.path">
 		<path refid="main.path" />
 		<pathelement location="${test.bin}" />
@@ -80,11 +89,12 @@
 	</target>
 
 	<target name="clean">
+		<delete dir="${util.bin}" />
 		<delete dir="${test.bin}" />
 		<delete dir="${macker}" />
 		<delete dir="${pmd}" />
 		<delete>
-			<fileset dir="${output}" includes="**/*.log" />
+			<fileset dir="${logging.directory}" includes="**/*.log" />
 		</delete>
 		<delete dir="${reports}" />
 		<delete dir="${build}" />
@@ -160,6 +170,12 @@
 		<javac srcdir="${main.java}" destdir="${main.bin}" classpathref="main.path" includeantruntime="false" debug="true" />
 	</target>
 
+	<target name="compile-util" depends="resolve-main">
+		<delete dir="${util.bin}" />
+		<mkdir dir="${util.bin}" />
+		<javac srcdir="${util.java}" destdir="${util.bin}" classpathref="util.path" includeantruntime="false" debug="true" />
+	</target>
+
 	<target name="compile-test" depends="resolve-test, compile-main">
 		<mkdir dir="${test.bin}" />
 		<javac srcdir="${test.java}" destdir="${test.bin}" classpathref="test.path" includeantruntime="false" debug="true" />
@@ -217,7 +233,8 @@
 		<jacoco:coverage enabled="${jacoco.enabled}" destfile="${reports.jacoco}/jacoco.exec">
 			<junit printsummary="yes" haltonfailure="true" fork="true">
 				<classpath refid="junit.path" />
-				<sysproperty key="log4j.configuration" value="file:${basedir}/log4j.properties" />
+				<jvmarg value="-Dlogging.directory=${logging.directory}" />
+				<sysproperty key="log4j.configuration" value="file:${main.config}/log4j.properties" />
 				<formatter type="xml" />
 				<batchtest todir="${reports.junit}">
 					<fileset dir="${test.java}">
@@ -235,7 +252,8 @@
 		<jacoco:coverage enabled="${jacoco.enabled}" destfile="${reports.jacoco}/jacoco.exec">
 			<junit printsummary="yes" haltonfailure="true" fork="true">
 				<classpath refid="junit.path" />
-				<sysproperty key="log4j.configuration" value="file:${basedir}/log4j.properties" />
+				<jvmarg value="-Dlogging.directory=${logging.directory}" />
+				<sysproperty key="log4j.configuration" value="file:${main.config}/log4j.properties" />
 				<formatter type="xml" />
 				<batchtest todir="${reports.junit}">
 					<fileset dir="${test.java}">
@@ -278,7 +296,7 @@
 	</target>
 
 	<!-- Database -->
-	<target name="database" depends="require-properties" description="">
+	<target name="database" depends="require-properties, compile-util" description="">
 		<sql driver="${database.driver}" url="jdbc:${database.url}" userid="${database.username}" password="${database.password}">
 			<classpath>
 				<pathelement location="${main.lib}/mysql-connector-java-5.1.34.jar" />
@@ -286,8 +304,16 @@
 			<transaction src="${main.sql}/drop-database.sql" />
 			<transaction src="${main.sql}/create-database.sql" />
 			<transaction src="${main.sql}/tables/canary.sql" />
+			<transaction src="${main.sql}/tables/user.sql" />
+			<transaction src="${main.sql}/tables/role.sql" />
+			<transaction src="${main.sql}/tables/user_role.sql" />
 			<transaction src="${main.sql}/data.sql" />
 		</sql>
+		<java classname="org.canary.server.AdminUserGenerator" fork="true" failonerror="true">
+			<classpath refid="util.path" />
+			<jvmarg value="-Dlogging.directory=${logging.directory}" />
+			<sysproperty key="log4j.configuration" value="file:${main.config}/log4j.properties" />
+		</java>
 	</target>
 
 	<!-- Build -->
@@ -296,9 +322,13 @@
 	<target name="build" depends="compile-main" description="">
 		<mkdir dir="${build}" />
 		<war destfile="${build}/canary-server.war" webxml="${main.config}/web.xml">
-			<webinf dir="${main.config}" excludesfile="${main.config}/web.xml" />
+			<webinf dir="${main.config}">
+				<exclude name="**/web.xml" />
+				<exclude name="**/*.properties" />
+			</webinf>
 			<lib dir="${main.lib}" />
 			<classes dir="${main.bin}" />
+			<fileset file="${main.config}/**.properties" />
 		</war>
 	</target>
 

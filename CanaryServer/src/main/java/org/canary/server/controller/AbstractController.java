@@ -201,9 +201,7 @@ public abstract class AbstractController<Model> implements CrudController {
 		    "Illegal argument; model cannot be null.");
 	}
 
-	final String json = JSON_MAPPER.writeValueAsString(model);
-
-	return new ResponseEntity<String>(json, HttpStatus.OK);
+	return new JSONResponseEntity(model);
     }
 
     protected final ResponseEntity<String> getResponse(final List<Model> models)
@@ -217,9 +215,7 @@ public abstract class AbstractController<Model> implements CrudController {
 		    "Illegal argument; model cannot be null.");
 	}
 
-	final String json = JSON_MAPPER.writeValueAsString(models);
-
-	return new ResponseEntity<String>(json, HttpStatus.OK);
+	return new JSONResponseEntity(models);
     }
 
     protected final ResponseEntity<String> getResponse(final Exception caught) {

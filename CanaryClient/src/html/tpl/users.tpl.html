@@ -1,0 +1,150 @@
+<div ng-controller="UsersController as ctrl"
+     ng-init="ctrl.init()"
+     class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-6">
+                <span class="panel-title">
+                    Users
+                </span>
+            </div>
+            <div class="col-xs-6">
+                <div class="row">
+                    <div class="col-xs-6"></div>
+                    <div class="col-xs-6">
+                        <button type="button"
+                                ng-disabled="addUser.visible"
+                                ng-click="ctrl.showAddUser()"
+                                class="col-xs-12 btn {{ addUser.visible ? 'btn-disabled' : 'btn-info' }} btn-md">
+                            Add
+                            <span class="glyphicon glyphicon-plus" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div ng-if="addUser.visible"
+             class="alert alert-warning">
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="{{ ctrl.isUsernameValid() ? '' : 'has-feedback has-error' }}">
+                        <input type="text"
+                               ng-model="addUser.username"
+                               class="form-control" />
+                    </div>
+                    <br />
+                    <div class="{{ ctrl.isPasswordValid() ? '' : 'has-feedback has-error' }}">
+                        <input type="password"
+                               placeholder="Password"
+                               ng-model="addUser.password"
+                               class="form-control" />
+                    </div>
+                    <br />
+                    <div class="{{ ctrl.isConfirmPasswordValid() ? '' : 'has-feedback has-error' }}">
+                        <input type="password"
+                               placeholder="Confirm Password"
+                               ng-model="addUser.confirmPassword"
+                               class="form-control" />
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="row">
+                        <div class="col-xs-4"></div>
+                        <div class="col-xs-8 btn-group {{ ctrl.isEditUserValid() ? '' : 'has-feedback has-error' }}">
+                            <button type="button"
+                                    ng-disabled="!ctrl.isAddUserValid()"
+                                    ng-click="ctrl.create(addUser.username, addUser.password); ctrl.hideAddUser()"
+                                    class="col-xs-6 btn {{ ctrl.isAddUserValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
+                                Create
+                                <span class="glyphicon glyphicon-ok" />
+                            </button>
+                            <button type="button"
+                                    ng-click="ctrl.hideAddUser()"
+                                    class="col-xs-6 btn btn-danger btn-md">
+                                Cancel
+                                <span class="glyphicon glyphicon-remove" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-repeat="user in users | orderBy:'-getId()'"
+             class="alert alert-info">
+            <div ng-controller="UserController as userCtrl">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div ng-if="editUser.visible">
+                            <div class="{{ userCtrl.isUsernameValid() ? '' : 'has-feedback has-error' }}">
+                                <input type="text"
+                                       ng-model="editUser.username"
+                                       class="form-control" />
+                            </div>
+                            <br />
+                            <div class="{{ userCtrl.isPasswordValid() ? '' : 'has-feedback has-error' }}">
+                                <input type="password"
+                                       placeholder="Password (Unchanged)"
+                                       ng-model="editUser.password"
+                                       class="form-control" />
+                            </div>
+                            <br />
+                            <div class="{{ userCtrl.isConfirmPasswordValid() ? '' : 'has-feedback has-error' }}">
+                                <input type="password"
+                                       placeholder="Confirm Password"
+                                       ng-model="editUser.confirmPassword"
+                                       class="form-control" />
+                            </div>
+                        </div>
+                        <div ng-if="!editUser.visible"
+                             class="field-label">
+                            {{ user.getUsername() }}
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="row">
+                            <div class="col-xs-4"></div>
+                            <div class="col-xs-8 btn-group {{ userCtrl.isEditUserValid() ? '' : 'has-feedback has-error' }}">
+                                <button type="button"
+                                        ng-if="editUser.visible"
+                                        ng-disabled="!userCtrl.isEditUserValid()"
+                                        ng-click="ctrl.update(user.getId(), editUser.username, editUser.password); userCtrl.hideEditUser()"
+                                        class="col-xs-6 btn {{ userCtrl.isEditUserValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
+                                    Update
+                                    <span class="glyphicon glyphicon-ok" />
+                                </button>
+                                <button type="button"
+                                        ng-if="!editUser.visible"
+                                        ng-click="userCtrl.showEditUser(user.getUsername())"
+                                        class="col-xs-6 btn btn-warning btn-md">
+                                    Edit
+                                    <span class="glyphicon glyphicon-pencil" />
+                                </button>
+                                <button type="button"
+                                        ng-if="editUser.visible"
+                                        ng-click="userCtrl.hideEditUser()"
+                                        class="col-xs-6 btn btn-danger btn-md">
+                                    Cancel
+                                    <span class="glyphicon glyphicon-remove" />
+                                </button>
+                                <button type="button"
+                                        ng-if="!editUser.visible"
+                                        ng-click="ctrl.delete(user)"
+                                        class="col-xs-6 btn btn-danger btn-md">
+                                    Delete
+                                    <span class="glyphicon glyphicon-trash" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <br />
+        <div>
+    </div>
+</div>

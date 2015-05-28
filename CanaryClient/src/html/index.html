@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html ng-app="org.canary">
+<html ng-app="org.canary"
+      ng-controller="IndexController as ctrl"
+      ng-init="ctrl.init()">
     <head>
         <title>Canary</title>
         <link rel="stylesheet" href="css/canary.min.css">
@@ -7,64 +9,42 @@
     <body>
         <div class="container">
             <br />
-            <div ng-controller="CanaryListController as canaryListController" ng-init="canaryListController.readAll()" class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <span class="canaryTitle">Canary</span>
-                        </div>
-                        <div class="col-xs-6 text-right">
-                            <button type="button" ng-disabled="canaryListController.isAddPanelVisible()" ng-click="canaryListController.showAddPanel()" class="btn {{ canaryListController.isAddPanelVisible() ? 'btn-disabled' : 'btn-info' }} btn-md"><span class="glyphicon glyphicon-plus" /></button>
-                        </div>
+            <div ng-repeat="alert in alerts">
+                <div ng-if="alert.visible"
+                     ng-include="alert.template"></div>
+            </div>
+            <div class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a href=""
+                           ng-click="ctrl.goToHome()"
+                           class="navbar-brand">
+                            Canary
+                        </a>
                     </div>
-                </div>
-                <div class="panel-body">
-                    <div ng-view></div>
-                    <div ng-if="canaryListController.isAddPanelVisible()" class="alert alert-warning">
-                        <div class="row">
-                            <div class="col-xs-6 {{ canaryListController.isNewMessageValid() ? '' : 'has-feedback has-error' }}">
-                                <input type="text" ng-model="add.message" class="form-control" />
-                            </div>
-                            <div class="col-xs-6 text-right">
-                                <div class="btn-group">
-                                    <button type="button" ng-disabled="!canaryListController.isNewMessageValid()" ng-click="canaryListController.create(add.message); canaryListController.hideAddPanel()" class="btn {{ canaryListController.isNewMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md"><span class="glyphicon glyphicon-ok" /></button>
-                                    <button type="button" ng-click="canaryListController.hideAddPanel()" class="btn btn-danger btn-md"><span class="glyphicon glyphicon-remove" /></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div ng-repeat="canary in canaries | orderBy:'-getId()'" class="alert alert-info">
-                        <div ng-controller="CanaryController as canaryController">
-                            <div class="row">
-                                <div class="col-xs-6 {{ canaryController.isUpdatedMessageValid() ? '' : 'has-feedback has-error' }}">
-                                    <input type="text" ng-if="canaryController.isEditFieldVisible()" ng-model="edit.message" class="form-control" />
-                                    <div ng-if="!canaryController.isEditFieldVisible()" class="canaryPanelText">
-                                        {{ canary.getMessage() }}
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 text-right">
-                                    <div class="btn-group">
-                                        <button type="button" ng-if="canaryController.isEditFieldVisible()" ng-disabled="!canaryController.isUpdatedMessageValid()" ng-click="canaryListController.update(canary.getId(), edit.message); canaryController.hideEditField()" class="btn {{ canaryController.isUpdatedMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md"><span class="glyphicon glyphicon-ok" /></button>
-                                        <button type="button" ng-if="!canaryController.isEditFieldVisible()" ng-click="canaryController.showEditField(canary.getMessage())" class="btn btn-warning btn-md"><span class="glyphicon glyphicon-pencil" /></button>
-                                        <button type="button" ng-if="canaryController.isEditFieldVisible()" ng-click="canaryController.hideEditField()" class="btn btn-danger btn-md"><span class="glyphicon glyphicon-remove" /></button>
-                                        <button type="button" ng-if="!canaryController.isEditFieldVisible()" ng-click="canaryListController.delete(canary)" class="btn btn-danger btn-md"><span class="glyphicon glyphicon-trash" /></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <div class="row">
-                        <div class="col-xs-3"></div>
-                        <div class="col-xs-6">
-                            <div ng-controller="LoginController as loginController">
-                                <button type="button" ng-click="loginController.logout()" class="col-xs-12 btn btn-default btn-md"><span class="glyphicon glyphicon-log-out" /></button>
-                            </div>
-                        </div>
                     <div>
+                        <ul class="nav navbar-nav">
+                            <li ng-repeat="page in pages"
+                                class="{{ page.active ? 'active' : '' }}">
+                                <a href=""
+                                   ng-click="ctrl.goToPage(page)">
+                                    {{ page.name }}
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li ng-controller="LoginController as loginCtrl">
+                                <a href=""
+                                   ng-click="loginCtrl.logout()">
+                                    Logout
+                                    <span class="glyphicon glyphicon-log-out" />
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
+            <div ng-view></div>
         </div>
         <script type="text/javascript" src="js/canary.min.js"></script>
     </body>

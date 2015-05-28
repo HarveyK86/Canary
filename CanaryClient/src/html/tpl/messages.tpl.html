@@ -1,0 +1,117 @@
+<div ng-controller="MessagesController as ctrl"
+     ng-init="ctrl.init()"
+     class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-6">
+                <span class="panel-title">
+                    Messages
+                </span>
+            </div>
+            <div class="col-xs-6">
+                <div class="row">
+                    <div class="col-xs-6"></div>
+                    <div class="col-xs-6">
+                        <button type="button"
+                                ng-disabled="addMessage.visible"
+                                ng-click="ctrl.showAddMessage()"
+                                class="col-xs-12 btn {{ addMessage.visible ? 'btn-disabled' : 'btn-info' }} btn-md">
+                            Add
+                            <span class="glyphicon glyphicon-plus" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div ng-if="addMessage.visible"
+             class="alert alert-warning">
+            <div class="row">
+                <div class="col-xs-6 {{ ctrl.isAddMessageValid() ? '' : 'has-feedback has-error' }}">
+                    <input type="text"
+                           ng-model="addMessage.value"
+                           class="form-control" />
+                </div>
+                <div class="col-xs-6">
+                    <div class="row">
+                        <div class="col-xs-4"></div>
+                        <div class="col-xs-8 btn-group">
+                            <button type="button"
+                                    ng-disabled="!ctrl.isAddMessageValid()"
+                                    ng-click="ctrl.create(addMessage.value); ctrl.hideAddMessage()"
+                                    class="col-xs-6 btn {{ ctrl.isAddMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
+                                Create
+                                <span class="glyphicon glyphicon-ok" />
+                            </button>
+                            <button type="button"
+                                    ng-click="ctrl.hideAddMessage()"
+                                    class="col-xs-6 btn btn-danger btn-md">
+                                Cancel
+                                <span class="glyphicon glyphicon-remove" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-repeat="message in messages | orderBy:'-getId()'"
+             class="alert alert-info">
+            <div ng-controller="MessageController as messageCtrl">
+                <div class="row">
+                    <div class="col-xs-6 {{ messageCtrl.isEditMessageValid() ? '' : 'has-feedback has-error' }}">
+                        <input type="text"
+                               ng-if="editMessage.visible"
+                               ng-model="editMessage.value"
+                               class="form-control" />
+                        <div ng-if="!editMessage.visible"
+                             class="field-label">
+                            {{ message.getValue() }}
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="row">
+                            <div class="col-xs-4"></div>
+                            <div class="col-xs-8 btn-group">
+                                <button type="button"
+                                        ng-if="editMessage.visible"
+                                        ng-disabled="!messageCtrl.isEditMessageValid()"
+                                        ng-click="ctrl.update(message.getId(), editMessage.value); messageCtrl.hideEditMessage()"
+                                        class="col-xs-6 btn {{ messageCtrl.isEditMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
+                                    Update
+                                    <span class="glyphicon glyphicon-ok" />
+                                </button>
+                                <button type="button"
+                                        ng-if="!editMessage.visible"
+                                        ng-click="messageCtrl.showEditMessage(message.getValue())"
+                                        class="col-xs-6 btn btn-warning btn-md">
+                                    Edit
+                                    <span class="glyphicon glyphicon-pencil" />
+                                </button>
+                                <button type="button"
+                                        ng-if="editMessage.visible"
+                                        ng-click="messageCtrl.hideEditMessage()"
+                                        class="col-xs-6 btn btn-danger btn-md">
+                                    Cancel
+                                    <span class="glyphicon glyphicon-remove" />
+                                </button>
+                                <button type="button"
+                                        ng-if="!editMessage.visible"
+                                        ng-click="ctrl.delete(message)"
+                                        class="col-xs-6 btn btn-danger btn-md">
+                                    Delete
+                                    <span class="glyphicon glyphicon-trash" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <br />
+        <div>
+    </div>
+</div>

@@ -1,13 +1,31 @@
 module = angular.module("org.canary.controller")
 
-controller = ($scope, $http, $window) ->
+controller = ($scope, $location, $http, $window) ->
 	self = this
 
-	self.token;
+	self.loginError =
+		name: "LoginError"
+		template: "tpl/login-error.tpl.html"
+		visible: false
+
+	self.logoutSuccess =
+		name: "LogoutSuccess"
+		template: "tpl/logout-success.tpl.html"
+		visible: false
+
+	$scope.alerts = [
+		self.loginError,
+		self.logoutSuccess
+	]
 
 	$scope.login =
 		username: ""
 		password: ""
+
+	self.init = () ->
+		parameters = $location.search()
+		for alert in $scope.alerts	
+			alert.visible = parameters.alert == alert.name
 
 	self.isUsernameValid = () ->
 		$scope.login.username != null && $scope.login.username != ""
@@ -25,31 +43,37 @@ controller = ($scope, $http, $window) ->
 			data: "username=" + username + "&password=" + password
 			headers: "Content-Type": "application/x-www-form-urlencoded"
 
-		$http(post).success(self.handleLoginSuccess).error(self.handleLoginError)
+		$http(post).success(self.onLogin).error(self.onLoginError)
 
 	self.logout = () ->
 		post =
 			method: "POST"
 			url: "logout"
 
-		$http(post).success(self.handleLogoutSuccess).error(self.handleLogoutError)
+		$http(post).success(self.onLogout).error(self.onLogoutError)
 
-	self.handleLoginSuccess = () ->
+	self.onLogin = () ->
 		$window.location.href = "index"
 
-	self.handleLoginError = () ->
-		$window.location.href = "login#/loginError"
+	self.onLoginError = () ->
+		$window.location.href = "login#?alert=LoginError"
+		$window.location.reload()
 
-	self.handleLogoutSuccess = () ->
-		$window.location.href = "login#/logoutSuccess"
+	self.onLogout = () ->
+		$window.location.href = "login#?alert=LogoutSuccess"
 
-	self.handleLogoutError = () ->
-		$window.location.href = "index#/logoutError"
+	self.onLogoutError = () ->
+		path = $location.path()
+		$window.location.href = "index#" + path + "?alert=LogoutError"
+		$window.location.reload()
 
+	init: self.init
+	isLoginErrorVisible: self.isLoginErrorVisible
+	isLogoutSuccessVisible: self.isLogoutSuccessVisible
 	isUsernameValid: self.isUsernameValid
 	isPasswordValid: self.isPasswordValid
 	isLoginValid: self.isLoginValid
 	login: self.login
 	logout: self.logout
 
-module.controller("LoginController", ["$scope", "$http", "$window", controller])
+module.controller("LoginController", ["$scope", "$location", "$http", "$window", controller])

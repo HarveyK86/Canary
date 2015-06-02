@@ -3,7 +3,7 @@ package org.canary.server.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.canary.server.model.Canary;
+import org.canary.server.model.Message;
 import org.canary.server.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping(value = "canary")
-public class CanaryController extends AbstractController<Canary> {
+@RequestMapping(value = "message")
+public class MessageController extends AbstractController<Message> {
 
     @Autowired
-    private CrudService<Canary> service;
+    private CrudService<Message> service;
 
     private static final Logger LOGGER = Logger
-	    .getLogger(CanaryController.class);
+	    .getLogger(MessageController.class);
 
-    private CanaryController() {
+    private MessageController() {
 	super();
     }
 
@@ -38,18 +38,18 @@ public class CanaryController extends AbstractController<Canary> {
 	}
 
 	final String json;
-	final String message;
+	final String value;
 
-	Canary canary;
+	Message message;
 	ResponseEntity<String> response;
 
 	try {
 
 	    json = super.getRequestBody(request);
-	    canary = super.getModel(json);
-	    message = canary.getMessage();
-	    canary = this.service.create(message);
-	    response = super.getResponse(canary);
+	    message = super.getModel(json);
+	    value = message.getValue();
+	    message = this.service.create(value);
+	    response = super.getResponse(message);
 
 	} catch (final Exception e) {
 	    response = super.getResponse(e);
@@ -59,15 +59,15 @@ public class CanaryController extends AbstractController<Canary> {
     }
 
     @Override
-    public final Class<Canary> getModelClass() {
+    public final Class<Message> getModelClass() {
 
 	LOGGER.debug("getModelClass");
 
-	return Canary.class;
+	return Message.class;
     }
 
     @Override
-    public final CrudService<Canary> getService() {
+    public final CrudService<Message> getService() {
 
 	LOGGER.debug("getService");
 

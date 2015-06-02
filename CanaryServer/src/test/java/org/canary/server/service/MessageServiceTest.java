@@ -2,8 +2,8 @@ package org.canary.server.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.canary.server.model.Canary;
-import org.canary.server.repository.CanaryRepository;
+import org.canary.server.model.Message;
+import org.canary.server.repository.MessageRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,26 +14,26 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
+public final class MessageServiceTest extends AbstractServiceTest<Message> {
 
     @Mock
-    private CanaryRepository repository;
+    private MessageRepository repository;
 
-    private CanaryService service;
+    private MessageService service;
 
     private static final String WHITESPACE_STRING = " ";
     private static final String MESSAGE = "Message";
 
     private static final Logger LOGGER = Logger
-	    .getLogger(CanaryServiceTest.class);
+	    .getLogger(MessageServiceTest.class);
 
     @Override
-    public CrudService<Canary> getService() {
+    public CrudService<Message> getService() {
 
 	final int id = super.getValidId();
-	final Canary canary = this.getModel();
+	final Message canary = this.getModel();
 
-	this.service = Mockito.mock(CanaryService.class);
+	this.service = Mockito.mock(MessageService.class);
 
 	ReflectionTestUtils.setField(this.service, "repository",
 		this.repository);
@@ -55,7 +55,7 @@ public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
 	Mockito.doCallRealMethod() //
 		.when(this.service) //
 		.update(Matchers.anyInt(), //
-			Matchers.any(Canary.class));
+			Matchers.any(Message.class));
 
 	Mockito.doCallRealMethod() //
 		.when(this.service) //
@@ -92,19 +92,19 @@ public final class CanaryServiceTest extends AbstractServiceTest<Canary> {
     @Test
     public void createShouldNotReturnNull() {
 
-	final Canary canary = this.service.create(MESSAGE);
+	final Message canary = this.service.create(MESSAGE);
 
 	Assert.assertNotNull(canary);
     }
 
     @Override
-    public Canary getModel() {
+    public Message getModel() {
 
 	final int id = super.getValidId();
-	final Canary canary = new Canary();
+	final Message canary = new Message();
 
 	canary.setId(id);
-	canary.setMessage(MESSAGE);
+	canary.setValue(MESSAGE);
 
 	return canary;
     }

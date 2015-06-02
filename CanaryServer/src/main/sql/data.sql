@@ -1,5 +1,5 @@
 -- canary
-INSERT INTO `canary`.`canary` (`Message`)
+INSERT INTO `canary`.`message` (`Value`)
 VALUES ('Hello, World!');
 
 -- role

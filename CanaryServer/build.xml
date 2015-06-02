@@ -303,7 +303,7 @@
 			</classpath>
 			<transaction src="${main.sql}/drop-database.sql" />
 			<transaction src="${main.sql}/create-database.sql" />
-			<transaction src="${main.sql}/tables/canary.sql" />
+			<transaction src="${main.sql}/tables/message.sql" />
 			<transaction src="${main.sql}/tables/user.sql" />
 			<transaction src="${main.sql}/tables/role.sql" />
 			<transaction src="${main.sql}/tables/user_role.sql" />

@@ -10,16 +10,16 @@ import javax.persistence.Table;
 import org.canary.server.repository.Persistable;
 
 @Entity
-@Table(name = "canary")
-public final class Canary implements Persistable {
+@Table(name = "message")
+public final class Message implements Persistable {
 
     @Id
     @Column(name = "Id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(name = "Message")
-    private String message;
+    @Column(name = "Value")
+    private String value;
 
     @Override
     public int getId() {
@@ -30,12 +30,12 @@ public final class Canary implements Persistable {
 	this.id = id;
     }
 
-    public String getMessage() {
-	return this.message;
+    public String getValue() {
+	return this.value;
     }
 
-    public void setMessage(final String message) {
-	this.message = message;
+    public void setValue(final String value) {
+	this.value = value;
     }
 
 }

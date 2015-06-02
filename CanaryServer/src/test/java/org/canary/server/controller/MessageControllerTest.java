@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.canary.server.model.Canary;
-import org.canary.server.service.CanaryService;
+import org.canary.server.model.Message;
+import org.canary.server.service.MessageService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,10 +21,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
+public final class MessageControllerTest extends AbstractControllerTest<Message> {
 
     @Mock
-    private CanaryService service;
+    private MessageService service;
 
     @Mock
     private HttpServletRequest request;
@@ -32,9 +32,9 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
     @Mock
     private BufferedReader reader;
 
-    private CanaryController controller;
+    private MessageController controller;
 
-    private static final Canary CANARY = new Canary();
+    private static final Message MESSAGE = new Message();
 
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
@@ -43,7 +43,7 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 
 	final String json;
 
-	this.controller = Mockito.mock(CanaryController.class);
+	this.controller = Mockito.mock(MessageController.class);
 
 	ReflectionTestUtils.setField(this.controller, "service", this.service);
 
@@ -72,7 +72,7 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 
 	Mockito.when(this.service //
 		.read(Matchers.anyInt())) //
-		.thenReturn(CANARY);
+		.thenReturn(MESSAGE);
 
 	try {
 
@@ -80,7 +80,7 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 		    .getReader()) //
 		    .thenReturn(this.reader);
 
-	    json = JSON_MAPPER.writeValueAsString(CANARY);
+	    json = JSON_MAPPER.writeValueAsString(MESSAGE);
 
 	    Mockito.when(this.reader //
 		    .readLine()) //
@@ -108,7 +108,7 @@ public final class CanaryControllerTest extends AbstractControllerTest<Canary> {
 
 	Mockito.when(this.service //
 		.create(Matchers.anyString())) //
-		.thenReturn(CANARY);
+		.thenReturn(MESSAGE);
 
 	final ResponseEntity<String> response = this.controller
 		.create(this.request);

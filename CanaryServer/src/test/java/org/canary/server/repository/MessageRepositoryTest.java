@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.canary.server.model.Canary;
+import org.canary.server.model.Message;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -19,7 +19,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
+public final class MessageRepositoryTest extends
+	AbstractRepositoryTest<Message> {
 
     @Mock
     private SessionFactory sessionFactory;
@@ -30,22 +31,22 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
     @Mock
     private Criteria criteria;
 
-    private CanaryRepository repository;
+    private MessageRepository repository;
 
     private static final String WHITESPACE_STRING = " ";
-    private static final String MESSAGE = "Message";
+    private static final String VALUE = "Value";
 
     private static final Logger LOGGER = Logger
-	    .getLogger(CanaryRepositoryTest.class);
+	    .getLogger(MessageRepositoryTest.class);
 
     @Override
-    public CrudRepository<Canary> getRepository() {
+    public CrudRepository<Message> getRepository() {
 
-	final Canary canary = this.getModel();
+	final Message message = this.getModel();
 	final int id = super.getValidId();
-	final List<Canary> canaries = new ArrayList<Canary>();
+	final List<Message> messages = new ArrayList<Message>();
 
-	this.repository = Mockito.mock(CanaryRepository.class);
+	this.repository = Mockito.mock(MessageRepository.class);
 
 	ReflectionTestUtils.setField(this.repository, "sessionFactory",
 		this.sessionFactory);
@@ -67,14 +68,14 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
 		.update(Matchers.anyInt(), //
-			Matchers.any(Canary.class));
+			Matchers.any(Message.class));
 
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
 		.delete(Matchers.anyInt());
 
 	Mockito.doCallRealMethod() //
-		.when((AbstractRepository<Canary>) this.repository) //
+		.when((AbstractRepository<Message>) this.repository) //
 		.getSession();
 
 	Mockito.when(this.sessionFactory //
@@ -84,19 +85,19 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
 	Mockito.when(this.session //
 		.get(Matchers.any(Class.class), //
 			Matchers.eq(id))) //
-		.thenReturn(canary);
+		.thenReturn(message);
 
 	Mockito.when(this.session //
 		.createCriteria(Matchers.any(Class.class))) //
 		.thenReturn(this.criteria);
 
 	Mockito.when(this.session //
-		.save(Matchers.any(Canary.class))) //
+		.save(Matchers.any(Message.class))) //
 		.thenReturn(id);
 
 	Mockito.when(this.criteria //
 		.list()) //
-		.thenReturn(canaries);
+		.thenReturn(messages);
 
 	return this.repository;
     }
@@ -104,12 +105,12 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
     @Test
     public void createShouldThrowIllegalArgument() {
 
-	for (final String message : new String[] { null, StringUtils.EMPTY,
+	for (final String value : new String[] { null, StringUtils.EMPTY,
 		WHITESPACE_STRING }) {
 
 	    try {
 
-		this.repository.create(message);
+		this.repository.create(value);
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
@@ -121,21 +122,21 @@ public final class CanaryRepositoryTest extends AbstractRepositoryTest<Canary> {
     @Test
     public void createShouldNotReturnNull() {
 
-	final Canary canary = this.repository.create(MESSAGE);
+	final Message message = this.repository.create(VALUE);
 
-	Assert.assertNotNull(canary);
+	Assert.assertNotNull(message);
     }
 
     @Override
-    public Canary getModel() {
+    public Message getModel() {
 
 	final int id = super.getValidId();
-	final Canary canary = new Canary();
+	final Message message = new Message();
 
-	canary.setId(id);
-	canary.setMessage(MESSAGE);
+	message.setId(id);
+	message.setValue(VALUE);
 
-	return canary;
+	return message;
     }
 
 }

@@ -1,7 +1,11 @@
 package org.canary.server.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.canary.server.model.Role;
 import org.canary.server.model.User;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -31,11 +35,16 @@ public class UserRepository extends AbstractRepository<User> {
 	}
 
 	final User user = new User();
+	final List<Role> roles = new ArrayList<Role>();
 	final Session session = super.getSession();
 	final int id;
 
 	user.setUsername(username);
 	user.setPassword(password);
+
+	roles.add(Role.USER);
+	user.setRoles(roles);
+
 	id = (int) session.save(user);
 
 	return super.read(id);

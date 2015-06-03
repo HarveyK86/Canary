@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.canary.server.model.Role;
 import org.canary.server.model.User;
 import org.canary.server.service.UserService;
@@ -46,7 +47,8 @@ public class UserControllerTest extends AbstractControllerTest<User> {
     public CrudController getController() {
 
 	final User user = this.getModel();
-	final String json;
+
+	String json;
 
 	this.controller = Mockito.mock(UserController.class);
 
@@ -75,17 +77,31 @@ public class UserControllerTest extends AbstractControllerTest<User> {
 		.when(this.controller) //
 		.delete(Matchers.anyString());
 
+	Mockito.doCallRealMethod() //
+		.when(this.controller) //
+		.getValidModel(Matchers.anyInt(), //
+			Matchers.any(User.class));
+
 	Mockito.when(this.service //
 		.read(Matchers.anyInt())) //
 		.thenReturn(user);
 
 	try {
 
+	    Mockito.doCallRealMethod() //
+		    .when(this.controller) //
+		    .getRequestBody(Matchers.any(HttpServletRequest.class));
+
+	    Mockito.doCallRealMethod() //
+		    .when(this.controller) //
+		    .getModel(Matchers.anyString());
+
 	    Mockito.when(this.request //
 		    .getReader()) //
 		    .thenReturn(this.reader);
 
 	    json = JSON_MAPPER.writeValueAsString(user);
+	    json = json.replace("}", ", \"password\":\"" + PASSWORD + "\"}");
 
 	    Mockito.when(this.reader //
 		    .readLine()) //
@@ -101,6 +117,22 @@ public class UserControllerTest extends AbstractControllerTest<User> {
     @Override
     public HttpServletRequest getRequest() {
 	return this.request;
+    }
+
+    @Override
+    public User getModel() {
+
+	final User user = new User();
+	final int id = super.getValidId();
+	final Role[] rolesArray = Role.values();
+	final List<Role> roles = Arrays.asList(rolesArray);
+
+	user.setId(id);
+	user.setUsername(USERNAME);
+	user.setPassword(PASSWORD);
+	user.setRoles(roles);
+
+	return user;
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -126,12 +158,17 @@ public class UserControllerTest extends AbstractControllerTest<User> {
     }
 
     @Test
-    public void createShouldReturnINTERNAL_SERVER_ERROR() {
+    public void createShouldReturnINTERNAL_SERVER_ERROR() throws IOException {
 
-	Mockito.when(this.service //
-		.create(Matchers.anyString(), //
-			Matchers.anyString())) //
-		.thenReturn(null);
+	final User user = this.getModel();
+	final String json;
+
+	user.setPassword(StringUtils.EMPTY);
+	json = JSON_MAPPER.writeValueAsString(user);
+
+	Mockito.when(this.reader //
+		.readLine()) //
+		.thenReturn(json, (String) null);
 
 	final ResponseEntity<String> response = this.controller
 		.create(this.request);
@@ -154,19 +191,18 @@ public class UserControllerTest extends AbstractControllerTest<User> {
 		response.getStatusCode());
     }
 
-    public User getModel() {
+    @Test
+    public void getValidModelNoDataShouldNotReturnNull() {
 
-	final User user = new User();
 	final int id = super.getValidId();
-	final Role[] rolesArray = Role.values();
-	final List<Role> roles = Arrays.asList(rolesArray);
 
-	user.setId(id);
-	user.setUsername(USERNAME);
-	user.setPassword(PASSWORD);
-	user.setRoles(roles);
+	User user = this.getModel();
 
-	return user;
+	user.setUsername(StringUtils.EMPTY);
+	user.setPassword(StringUtils.EMPTY);
+	user = this.controller.getValidModel(id, user);
+
+	Assert.assertNotNull(user);
     }
 
 }

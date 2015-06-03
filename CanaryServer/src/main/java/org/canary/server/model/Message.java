@@ -21,6 +21,10 @@ public final class Message implements Persistable {
     @Column(name = "Value")
     private String value;
 
+    public Message() {
+	super();
+    }
+
     @Override
     public int getId() {
 	return this.id;

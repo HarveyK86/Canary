@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import org.canary.server.repository.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "user")
@@ -42,6 +43,10 @@ public final class User implements Persistable {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "User_Id"))
     private List<Role> roles;
 
+    public User() {
+	super();
+    }
+
     @Override
     public int getId() {
 	return this.id;
@@ -59,10 +64,12 @@ public final class User implements Persistable {
 	this.username = username;
     }
 
+    @JsonIgnore
     public String getPassword() {
 	return this.password;
     }
 
+    @JsonProperty("password")
     public void setPassword(final String password) {
 	this.password = password;
     }

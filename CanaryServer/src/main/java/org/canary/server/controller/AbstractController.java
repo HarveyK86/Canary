@@ -49,6 +49,8 @@ public abstract class AbstractController<Model> implements CrudController {
 
     public abstract CrudService<Model> getService();
 
+    public abstract Model getValidModel(final int id, final Model candidate);
+
     @Override
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     public ResponseEntity<String> read(@PathVariable("id") final String id) {
@@ -111,11 +113,13 @@ public abstract class AbstractController<Model> implements CrudController {
 	if (StringUtils.isBlank(id) || request == null) {
 
 	    throw new IllegalArgumentException(
-		    "Illegal argument; id cannot be blank and request cannot be null.");
+		    "Illegal argument; id cannot be blank and request cannot "
+			    + "be null.");
 	}
 
 	final int identifier;
 	final String json;
+	final Model candidate;
 	final Model model;
 
 	ResponseEntity<String> response;
@@ -124,7 +128,8 @@ public abstract class AbstractController<Model> implements CrudController {
 
 	    identifier = Integer.valueOf(id);
 	    json = this.getRequestBody(request);
-	    model = this.getModel(json);
+	    candidate = this.getModel(json);
+	    model = this.getValidModel(identifier, candidate);
 	    this.service.update(identifier, model);
 	    response = this.getResponse();
 

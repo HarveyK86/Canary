@@ -2,6 +2,7 @@ package org.canary.server.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.canary.server.model.Message;
 import org.canary.server.service.CrudService;
@@ -72,6 +73,19 @@ public class MessageController extends AbstractController<Message> {
 	LOGGER.debug("getService");
 
 	return this.service;
+    }
+
+    @Override
+    public Message getValidModel(final int id, final Message candidate) {
+
+	final String value = candidate.getValue();
+	final Message message = this.service.read(id);
+
+	if (StringUtils.isNotBlank(value)) {
+	    message.setValue(value);
+	}
+
+	return message;
     }
 
 }

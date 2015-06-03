@@ -13,10 +13,21 @@ public final class ContextListenerTest {
     @Mock
     private ServletContextEvent event;
 
+    private static final String INVALID_PATH = "Invalid Path";
+
     @Test
     public void contextInitialisedShouldExecute() {
 
 	final ContextListener contextListener = new ContextListener();
+
+	contextListener.contextInitialized(this.event);
+    }
+
+    @Test
+    public void contextInitialisedShouldNotThrowIOException() {
+
+	final ContextListener contextListener = new ContextListener(
+		INVALID_PATH);
 
 	contextListener.contextInitialized(this.event);
     }

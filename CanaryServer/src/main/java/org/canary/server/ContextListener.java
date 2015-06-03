@@ -1,6 +1,5 @@
 package org.canary.server;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -11,17 +10,30 @@ import org.apache.log4j.Logger;
 
 public final class ContextListener implements ServletContextListener {
 
+    private final String path;
+
     private static final String PATH = "canary.properties";
 
     private static final Logger LOGGER = Logger
 	    .getLogger(ContextListener.class);
+
+    public ContextListener() {
+	this(PATH);
+    }
+
+    public ContextListener(final String path) {
+
+	super();
+
+	this.path = path;
+    }
 
     @Override
     public void contextInitialized(final ServletContextEvent event) {
 
 	final Thread thread = Thread.currentThread();
 	final ClassLoader loader = thread.getContextClassLoader();
-	final InputStream input = loader.getResourceAsStream(PATH);
+	final InputStream input = loader.getResourceAsStream(this.path);
 	final Properties properties = new Properties();
 
 	String propertyValue;
@@ -36,9 +48,9 @@ public final class ContextListener implements ServletContextListener {
 		System.setProperty(propertyName, propertyValue);
 	    }
 
-	} catch (final IOException e) {
+	} catch (final Exception e) {
 
-	    LOGGER.error("IOException caught while attempting to read "
+	    LOGGER.error("Exception caught while attempting to read "
 		    + "properties.");
 	}
     }

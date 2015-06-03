@@ -34,6 +34,8 @@ public abstract class AbstractControllerTest<Model> {
 
     public abstract HttpServletRequest getRequest();
 
+    public abstract Model getModel();
+
     @Test
     public final void readShouldThrowIllegalArgument() {
 
@@ -158,6 +160,20 @@ public abstract class AbstractControllerTest<Model> {
 
 	Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,
 		response.getStatusCode());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public final void getValidModelShouldNotReturnNull() {
+
+	final int id = this.getValidId();
+
+	Model model = this.getModel();
+
+	model = ((AbstractController<Model>) this.controller).getValidModel(id,
+		model);
+
+	Assert.assertNotNull(model);
     }
 
     public final int getValidId() {

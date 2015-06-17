@@ -26,7 +26,7 @@ public abstract class AbstractPersistableEnumIntegrationTest<Model extends Enum<
 
     private Class<Model> clazz;;
 
-    private static final String SQL = "SELECT * FROM %s";
+    private static final String SQL = "SELECT * FROM %s ORDER BY Id";
 
     @Before
     public final void before() {

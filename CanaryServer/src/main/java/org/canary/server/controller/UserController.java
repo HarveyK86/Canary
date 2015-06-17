@@ -1,11 +1,15 @@
 package org.canary.server.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.canary.server.model.Permission;
 import org.canary.server.model.User;
 import org.canary.server.service.CrudService;
+import org.canary.server.service.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class UserController extends AbstractController<User> {
 
     @Autowired
-    private CrudService<User> service;
+    private UserServiceInterface service;
 
     private static final PasswordEncoder ENCODER = new BCryptPasswordEncoder();
 
@@ -45,6 +49,7 @@ public class UserController extends AbstractController<User> {
 	final String username;
 	final String password;
 	final String passwordHash;
+	final List<Permission> permissions;
 
 	User user;
 	ResponseEntity<String> response;
@@ -55,6 +60,7 @@ public class UserController extends AbstractController<User> {
 	    user = super.getModel(json);
 	    username = user.getUsername();
 	    password = user.getPassword();
+	    permissions = user.getPermissions();
 
 	    if (StringUtils.isBlank(password)) {
 
@@ -63,11 +69,32 @@ public class UserController extends AbstractController<User> {
 	    }
 
 	    passwordHash = ENCODER.encode(password);
-	    user = this.service.create(username, passwordHash);
+	    user = this.service.create(username, passwordHash, permissions);
 	    response = super.getResponse(user);
 
 	} catch (final Exception e) {
 	    response = super.getResponse(e);
+	}
+
+	return response;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/current")
+    public ResponseEntity<String> readCurrent() {
+
+	LOGGER.debug("readCurrent");
+
+	final User user;
+
+	ResponseEntity<String> response;
+
+	try {
+
+	    user = this.service.readCurrent();
+	    response = this.getResponse(user);
+
+	} catch (final Exception e) {
+	    response = this.getResponse(e);
 	}
 
 	return response;
@@ -92,10 +119,20 @@ public class UserController extends AbstractController<User> {
     @Override
     public User getValidModel(final int id, final User candidate) {
 
+	LOGGER.debug("getValidModel[id=" + id + ", candidate=" + candidate
+		+ "]");
+
+	if (candidate == null) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; candidate cannot be null.");
+	}
+
 	final String username = candidate.getUsername();
 	final User user = this.service.read(id);
 	final String password = candidate.getPassword();
 	final String passwordHash;
+	final List<Permission> permissions = candidate.getPermissions();
 
 	if (StringUtils.isNotBlank(username)) {
 	    user.setUsername(username);
@@ -106,6 +143,8 @@ public class UserController extends AbstractController<User> {
 	    passwordHash = ENCODER.encode(password);
 	    user.setPassword(passwordHash);
 	}
+
+	user.setPermissions(permissions);
 
 	return user;
     }

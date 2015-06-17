@@ -1,6 +1,6 @@
 module = angular.module("org.canary.controller")
 
-controller = ($scope, repository) ->
+controller = ($scope, service) ->
     self = this
 
     $scope.addMessage =
@@ -22,23 +22,28 @@ controller = ($scope, repository) ->
         $scope.addMessage.value != null && $scope.addMessage.value != ""
 
     self.create = (value) ->
-        repository.create(value, self.onCreate)
+        service.create(value, self.onCreate)
+
+    self.read = (messageId) ->
+        service.read(messageId, self.onRead)
 
     self.readAll = () ->
-        repository.readAll(self.onReadAll)
+        service.readAll(self.onReadAll)
 
     self.update = (messageId, value) ->
-        repository.update(messageId, value, self.onUpdate)
+        service.update(messageId, value, self.onUpdate)
 
     self.delete = (message) ->
-        messageId = message.getId()
-        repository.delete(messageId, self.onDelete)
-
-    self.onReadAll = (messages) ->
-        $scope.messages = messages
+        service.delete(message, self.onDelete)
 
     self.onCreate = () ->
         self.readAll() 
+
+    self.onRead = (message) ->
+        $scope.message = message
+
+    self.onReadAll = (messages) ->
+        $scope.messages = messages
 
     self.onUpdate = () ->
         self.readAll() 
@@ -51,7 +56,9 @@ controller = ($scope, repository) ->
     hideAddMessage: self.hideAddMessage
     isAddMessageValid: self.isAddMessageValid
     create: self.create
+    read: self.read
+    readAll: self.readAll
     update: self.update
     delete: self.delete
 
-module.controller("MessagesController", ["$scope", "MessageRepository", controller])
+module.controller("MessagesController", ["$scope", "MessageService", controller])

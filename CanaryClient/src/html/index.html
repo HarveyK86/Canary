@@ -25,6 +25,7 @@
                     <div>
                         <ul class="nav navbar-nav">
                             <li ng-repeat="page in pages"
+                                ng-if="currentUser.hasPermission(page.permission)"
                                 class="{{ page.active ? 'active' : '' }}">
                                 <a href=""
                                    ng-click="ctrl.goToPage(page)">

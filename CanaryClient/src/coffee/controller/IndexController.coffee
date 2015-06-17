@@ -1,13 +1,15 @@
 module = angular.module("org.canary.controller")
 
-controller = ($scope, $location, $window) ->
+controller = ($scope, $location, $window, userService) ->
     self = this
 
     self.messages =
         name: "Messages"
+        permission: "READ_MESSAGE"
 
     self.users =
         name: "Users"
+        permission: "READ_USER"
 
     self.logoutError =
         name: "LogoutError"
@@ -36,6 +38,7 @@ controller = ($scope, $location, $window) ->
                     self.setAlert(alert)
         else
             self.goToPage(self.messages)
+        userService.readCurrent(self.onReadCurrent)
 
     self.goToHome = () ->
         $window.location.href = "index#/Home"
@@ -53,8 +56,11 @@ controller = ($scope, $location, $window) ->
         for current in $scope.alerts
             current.visible = current == alert
 
+    self.onReadCurrent = (currentUser) ->
+        $scope.currentUser = currentUser
+
     init = self.init
     goToHome = self.goToHome
     goToPage = self.goToPage
 
-module.controller("IndexController", ["$scope", "$location", "$window", controller])
+module.controller("IndexController", ["$scope", "$location", "$window", "UserService", controller])

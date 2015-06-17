@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.canary.server.model.Role;
+import org.canary.server.model.Permission;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public final class AdminUserGenerator {
@@ -27,12 +27,13 @@ public final class AdminUserGenerator {
     "INSERT INTO `canary`.`user` (`Username`, `Password`) VALUES "
 	    + "('%s', '%s');";
 
-    private static final String USER_ROLE_SQL = //
-    "INSERT INTO `canary`.`user_role` (`User_Id`, `Role_Id`) VALUES ("
+    private static final String USER_PERMISSION_SQL = //
+    "INSERT INTO `canary`.`user_permission` (`User_Id`, `Permission_Id`)"
+	    + "VALUES (" //
 	    + "(SELECT user.`Id` FROM `canary`.`user` user "
 	    + "WHERE user.`Username` = '%s'),"
-	    + "(SELECT role.`Id` FROM `canary`.`role` role "
-	    + "WHERE role.`Name` = '%s'));";
+	    + "(SELECT permission.`Id` FROM `canary`.`permission` permission "
+	    + "WHERE permission.`Name` = '%s'));";
 
     public static void main(final String[] args) throws IOException,
 	    ClassNotFoundException, SQLException {
@@ -53,7 +54,7 @@ public final class AdminUserGenerator {
 	passwordHash = encoder.encode(password);
 
 	AdminUserGenerator.insertUser(username, passwordHash, properties);
-	AdminUserGenerator.insertUserRoles(username, properties);
+	AdminUserGenerator.insertUserPermissions(username, properties);
 
     }
 
@@ -66,19 +67,20 @@ public final class AdminUserGenerator {
 	AdminUserGenerator.runSQL(userSQL, properties);
     }
 
-    private static void insertUserRoles(final String username,
+    private static void insertUserPermissions(final String username,
 	    final Properties properties) throws ClassNotFoundException,
 	    SQLException {
 
-	String roleName;
-	String userRoleSQL;
+	String permissionName;
+	String userPermissionSQL;
 
-	for (final Role role : Role.values()) {
+	for (final Permission permission : Permission.values()) {
 
-	    roleName = role.getAuthority();
-	    userRoleSQL = String.format(USER_ROLE_SQL, username, roleName);
+	    permissionName = permission.getAuthority();
+	    userPermissionSQL = String.format(USER_PERMISSION_SQL, username,
+		    permissionName);
 
-	    AdminUserGenerator.runSQL(userRoleSQL, properties);
+	    AdminUserGenerator.runSQL(userPermissionSQL, properties);
 	}
     }
 

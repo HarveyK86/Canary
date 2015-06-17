@@ -1,9 +1,10 @@
 package org.canary.server.service;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.canary.server.model.Message;
-import org.canary.server.repository.CrudRepository;
 import org.canary.server.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MessageService extends AbstractService<Message> {
+public class MessageService implements MessageServiceInterface {
 
     @Autowired
     private MessageRepository repository;
@@ -24,10 +25,8 @@ public class MessageService extends AbstractService<Message> {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAuthority('USER')")
-    public Message create(final Object... args) {
-
-	final String value = (String) args[0];
+    @PreAuthorize("hasAuthority('CREATE_MESSAGE')")
+    public Message create(final String value) {
 
 	LOGGER.debug("create[value=" + value + "]");
 
@@ -41,11 +40,49 @@ public class MessageService extends AbstractService<Message> {
     }
 
     @Override
-    public final CrudRepository<Message> getRepository() {
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('READ_MESSAGE')")
+    public Message read(final int id) {
 
-	LOGGER.debug("getRepository");
+	LOGGER.debug("read[id=" + id + "]");
 
-	return this.repository;
+	return this.repository.read(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('READ_MESSAGE')")
+    public List<Message> readAll() {
+
+	LOGGER.debug("readAll");
+
+	return this.repository.readAll();
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('UPDATE_MESSAGE')")
+    public void update(final int id, final Message message) {
+
+	LOGGER.debug("update[id=" + id + ", message=" + message + "]");
+
+	if (message == null) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; message cannot be null.");
+	}
+
+	this.repository.update(id, message);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('DELETE_MESSAGE')")
+    public void delete(final int id) {
+
+	LOGGER.debug("delete[id=" + id + "]");
+
+	this.repository.delete(id);
     }
 
 }

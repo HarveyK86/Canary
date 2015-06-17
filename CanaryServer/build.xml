@@ -9,7 +9,6 @@
 	<property name="jacoco" value="${basedir}/jacoco" />
 	<property name="macker" value="${basedir}/macker" />
 	<property name="pmd" value="${basedir}/pmd" />
-	<property name="output" value="${basedir}/output" />
 	<property name="reports" value="${basedir}/reports" />
 	<property name="src" value="${basedir}/src" />
 
@@ -19,23 +18,23 @@
 	<property name="reports.jacoco" value="${reports}/jacoco" />
 	<property name="reports.javadoc" value="${reports}/javadoc" />
 
-	<property name="main" value="${src}/main" />
-	<property name="util" value="${src}/util" />
-	<property name="test" value="${src}/test" />
+	<property name="src.main" value="${src}/main" />
+	<property name="src.util" value="${src}/util" />
+	<property name="src.test" value="${src}/test" />
 
 	<property name="main.bin" value="${bin}/main" />
-	<property name="main.java" value="${main}/java" />
-	<property name="main.resources" value="${main}/resources" />
-	<property name="main.sql" value="${main}/sql" />
+	<property name="main.java" value="${src.main}/java" />
+	<property name="main.resources" value="${src.main}/resources" />
+	<property name="main.sql" value="${src.main}/sql" />
 	<property name="main.config" value="${main.resources}/config" />
 	<property name="main.lib" value="${main.resources}/lib" />
 
 	<property name="util.bin" value="${bin}/util" />
-	<property name="util.java" value="${util}/java" />
+	<property name="util.java" value="${src.util}/java" />
 
 	<property name="test.bin" value="${bin}/test" />
-	<property name="test.java" value="${test}/java" />
-	<property name="test.resources" value="${test}/resources" />
+	<property name="test.java" value="${src.test}/java" />
+	<property name="test.resources" value="${src.test}/resources" />
 	<property name="test.lib" value="${test.resources}/lib" />
 
 	<property name="ivy.version" value="2.1.0-rc2" />
@@ -45,38 +44,40 @@
 	<property name="jacoco.url" value="http://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/${jacoco.version}/jacoco-${jacoco.version}.zip" />
 
 	<!-- Paths -->
-	<path id="ivy.path">
+	<path id="ivy.classpath">
 		<fileset dir="${ivy}" includes="**/*.jar" />
 	</path>
 
-	<path id="macker.path">
+	<path id="macker.classpath">
 		<fileset dir="${macker}" includes="**/*.jar" />
 	</path>
 
-	<path id="pmd.path">
+	<path id="pmd.classpath">
 		<fileset dir="${pmd}" includes="**/*.jar" />
 	</path>
 
-	<path id="junit.path">
-		<path refid="test.path" />
+	<path id="junit.classpath">
+		<path refid="test.classpath" />
 	</path>
 
-	<path id="main.path">
+	<path id="main.classpath">
+		<pathelement location="${basedir}" />
 		<pathelement location="${main.bin}" />
 		<pathelement location="${main.config}" />
-		<pathelement location="${basedir}" />
 		<fileset dir="${main.lib}" includes="**/*.jar" />
 	</path>
 
-	<path id="util.path">
-		<path refid="main.path" />
+	<path id="util.classpath">
+		<pathelement location="${basedir}" />
 		<pathelement location="${util.bin}" />
+		<path refid="main.classpath" />
 	</path>
 
-	<path id="test.path">
-		<path refid="main.path" />
+	<path id="test.classpath">
+		<pathelement location="${basedir}" />
 		<pathelement location="${test.bin}" />
 		<fileset dir="${test.lib}" includes="**/*.jar" />
+		<path refid="main.classpath" />
 	</path>
 
 	<!-- Targets -->
@@ -84,28 +85,28 @@
 		<available file="${basedir}/canary.properties" property="properties.found" />
 	</target>
 
-	<target name="require-properties" depends="check-properties" unless="properties.found">
+	<target name="assert-properties" depends="check-properties" unless="properties.found">
 		<fail message="canary.properties required. See canary.properties.template." />
 	</target>
 
 	<target name="clean">
 		<delete dir="${util.bin}" />
 		<delete dir="${test.bin}" />
+		<delete dir="${build}" />
 		<delete dir="${macker}" />
 		<delete dir="${pmd}" />
 		<delete>
 			<fileset dir="${logging.directory}" includes="**/*.log" />
 		</delete>
 		<delete dir="${reports}" />
-		<delete dir="${build}" />
 		<delete dir="${main.lib}" />
 		<delete dir="${test.lib}" />
 	</target>
 
 	<target name="purge" depends="clean">
 		<delete dir="${bin}" />
-		<delete dir="${jacoco}" />
 		<delete dir="${ivy}" />
+		<delete dir="${jacoco}" />
 	</target>
 
 	<!-- Ivy -->
@@ -119,15 +120,15 @@
 	</target>
 
 	<target name="init-ivy" depends="download-ivy">
-		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.path" />
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.classpath" />
 	</target>
 
-	<target name="resolve-macker" depends="clean, init-ivy">
+	<target name="resolve-macker" depends="clean, init-ivy" unless="skip.macker">
 		<mkdir dir="${macker}" />
 		<ivy:retrieve pattern="${macker}/[artifact]-[revision].[ext]" conf="macker" />
 	</target>
 
-	<target name="resolve-pmd" depends="clean, init-ivy">
+	<target name="resolve-pmd" depends="clean, init-ivy" unless="skip.pmd">
 		<mkdir dir="${pmd}" />
 		<ivy:retrieve pattern="${pmd}/[artifact]-[revision].[ext]" conf="pmd" />
 	</target>
@@ -167,18 +168,17 @@
 	<target name="compile-main" depends="resolve-main">
 		<delete dir="${main.bin}" />
 		<mkdir dir="${main.bin}" />
-		<javac srcdir="${main.java}" destdir="${main.bin}" classpathref="main.path" includeantruntime="false" debug="true" />
+		<javac srcdir="${main.java}" destdir="${main.bin}" classpathref="main.classpath" includeantruntime="false" debug="true" />
 	</target>
 
 	<target name="compile-util" depends="resolve-main">
-		<delete dir="${util.bin}" />
 		<mkdir dir="${util.bin}" />
-		<javac srcdir="${util.java}" destdir="${util.bin}" classpathref="util.path" includeantruntime="false" debug="true" />
+		<javac srcdir="${util.java}" destdir="${util.bin}" classpathref="util.classpath" includeantruntime="false" debug="true" />
 	</target>
 
 	<target name="compile-test" depends="resolve-test, compile-main">
 		<mkdir dir="${test.bin}" />
-		<javac srcdir="${test.java}" destdir="${test.bin}" classpathref="test.path" includeantruntime="false" debug="true" />
+		<javac srcdir="${test.java}" destdir="${test.bin}" classpathref="test.classpath" includeantruntime="false" debug="true" />
 	</target>
 
 	<!-- Macker -->
@@ -186,9 +186,9 @@
 		<property name="skip.macker" value="true" />
 	</target>
 
-	<target name="init-macker" depends="resolve-macker">
-		<taskdef name="macker" classname="net.innig.macker.ant.MackerAntTask" classpathref="macker.path" />
-		<taskdef name="macker-report" classname="net.innig.macker.ant.MackerReportAntTask" classpathref="macker.path" />
+	<target name="init-macker" depends="resolve-macker" unless="skip.macker">
+		<taskdef name="macker" classname="net.innig.macker.ant.MackerAntTask" classpathref="macker.classpath" />
+		<taskdef name="macker-report" classname="net.innig.macker.ant.MackerReportAntTask" classpathref="macker.classpath" />
 	</target>
 
 	<target name="macker" depends="init-macker, compile-test" unless="skip.macker" description="">
@@ -198,7 +198,7 @@
 			<classes dir="${test.bin}">
 				<include name="**/*.class" />
 			</classes>
-			<classpath refid="macker.path" />
+			<classpath refid="macker.classpath" />
 		</macker>
 		<macker-report xmlReportfile="${reports.macker}/macker.xml" outputFile="${reports.macker}/macker.html" />
 		<fail if="macker.failed" />
@@ -209,8 +209,8 @@
 		<property name="skip.pmd" value="true" />
 	</target>
 
-	<target name="init-pmd" depends="resolve-pmd">
-		<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.path" />
+	<target name="init-pmd" depends="resolve-pmd" unless="skip.pmd">
+		<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath" />
 	</target>
 
 	<target name="pmd" depends="init-pmd, compile-test" unless="skip.pmd" description="">
@@ -232,9 +232,9 @@
 		<mkdir dir="${reports.junit}" />
 		<jacoco:coverage enabled="${jacoco.enabled}" destfile="${reports.jacoco}/jacoco.exec">
 			<junit printsummary="yes" haltonfailure="true" fork="true">
-				<classpath refid="junit.path" />
+				<classpath refid="junit.classpath" />
 				<jvmarg value="-Dlogging.directory=${logging.directory}" />
-				<sysproperty key="log4j.configuration" value="file:${main.config}/log4j.properties" />
+				<sysproperty key="log4j.configuration" value="file:${basedir}/log4j.properties" />
 				<formatter type="xml" />
 				<batchtest todir="${reports.junit}">
 					<fileset dir="${test.java}">
@@ -251,9 +251,9 @@
 		<mkdir dir="${reports.junit}" />
 		<jacoco:coverage enabled="${jacoco.enabled}" destfile="${reports.jacoco}/jacoco.exec">
 			<junit printsummary="yes" haltonfailure="true" fork="true">
-				<classpath refid="junit.path" />
+				<classpath refid="junit.classpath" />
 				<jvmarg value="-Dlogging.directory=${logging.directory}" />
-				<sysproperty key="log4j.configuration" value="file:${main.config}/log4j.properties" />
+				<sysproperty key="log4j.configuration" value="file:${basedir}/log4j.properties" />
 				<formatter type="xml" />
 				<batchtest todir="${reports.junit}">
 					<fileset dir="${test.java}">
@@ -291,12 +291,12 @@
 	<target name="javadoc" depends="compile-main" unless="skip.javadoc" description="">
 		<mkdir dir="${reports.javadoc}" />
 		<javadoc sourcepath="${main.java}" destdir="${reports.javadoc}">
-			<classpath refid="main.path" />
+			<classpath refid="main.classpath" />
 		</javadoc>
 	</target>
 
 	<!-- Database -->
-	<target name="database" depends="require-properties, compile-util" description="">
+	<target name="database" depends="assert-properties, compile-util" description="">
 		<sql driver="${database.driver}" url="jdbc:${database.url}" userid="${database.username}" password="${database.password}">
 			<classpath>
 				<pathelement location="${main.lib}/mysql-connector-java-5.1.34.jar" />
@@ -305,30 +305,29 @@
 			<transaction src="${main.sql}/create-database.sql" />
 			<transaction src="${main.sql}/tables/message.sql" />
 			<transaction src="${main.sql}/tables/user.sql" />
-			<transaction src="${main.sql}/tables/role.sql" />
-			<transaction src="${main.sql}/tables/user_role.sql" />
+			<transaction src="${main.sql}/tables/permission.sql" />
+			<transaction src="${main.sql}/tables/user_permission.sql" />
 			<transaction src="${main.sql}/data.sql" />
 		</sql>
 		<java classname="org.canary.server.AdminUserGenerator" fork="true" failonerror="true">
-			<classpath refid="util.path" />
+			<classpath refid="util.classpath" />
 			<jvmarg value="-Dlogging.directory=${logging.directory}" />
-			<sysproperty key="log4j.configuration" value="file:${main.config}/log4j.properties" />
+			<sysproperty key="log4j.configuration" value="file:${basedir}/log4j.properties" />
 		</java>
 	</target>
 
 	<!-- Build -->
-	<target name="fast" depends="no-macker, no-pmd, no-junit, no-javadoc" />
+	<target name="just" depends="no-macker, no-pmd, no-junit, no-javadoc" />
 
 	<target name="build" depends="compile-main" description="">
 		<mkdir dir="${build}" />
 		<war destfile="${build}/canary-server.war" webxml="${main.config}/web.xml">
 			<webinf dir="${main.config}">
 				<exclude name="**/web.xml" />
-				<exclude name="**/*.properties" />
 			</webinf>
 			<lib dir="${main.lib}" />
 			<classes dir="${main.bin}" />
-			<fileset file="${main.config}/**.properties" />
+			<fileset file="${basedir}/log4j.properties" />
 		</war>
 	</target>
 

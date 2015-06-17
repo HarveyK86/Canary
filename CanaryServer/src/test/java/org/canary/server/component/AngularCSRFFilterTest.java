@@ -1,4 +1,4 @@
-package org.canary.server.spring;
+package org.canary.server.component;
 
 import java.io.IOException;
 

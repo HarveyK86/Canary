@@ -1,11 +1,12 @@
 package org.canary.server.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.canary.server.model.Role;
+import org.canary.server.model.Permission;
 import org.canary.server.model.User;
 import org.canary.server.repository.UserRepository;
 import org.junit.Assert;
@@ -36,6 +37,7 @@ public final class UserServiceTest extends AbstractServiceTest<User> {
 	    .getLogger(UserServiceTest.class);
 
     @Override
+    @SuppressWarnings("unchecked")
     public CrudService<User> getService() {
 
 	final int id = super.getValidId();
@@ -46,19 +48,23 @@ public final class UserServiceTest extends AbstractServiceTest<User> {
 	ReflectionTestUtils.setField(this.service, "repository",
 		this.repository);
 
-	this.service.postConstruct();
-
 	Mockito.doCallRealMethod() //
 		.when(this.service) //
 		.create(Matchers.anyString(), //
-			Matchers.anyString());
+			Matchers.anyString(), //
+			Matchers.anyList());
 
 	Mockito.doCallRealMethod() //
 		.when(this.service) //
 		.read(Matchers.anyInt());
 
 	Mockito.doCallRealMethod() //
-		.when(this.service).readAll();
+		.when(this.service) //
+		.readCurrent();
+
+	Mockito.doCallRealMethod() //
+		.when(this.service) //
+		.readAll();
 
 	Mockito.doCallRealMethod() //
 		.when(this.service) //
@@ -75,7 +81,8 @@ public final class UserServiceTest extends AbstractServiceTest<User> {
 
 	Mockito.when(this.repository //
 		.create(Matchers.anyString(), //
-			Matchers.anyString())) //
+			Matchers.anyString(), //
+			Matchers.anyList())) //
 		.thenReturn(user);
 
 	Mockito.when(this.repository //
@@ -90,14 +97,16 @@ public final class UserServiceTest extends AbstractServiceTest<User> {
     }
 
     @Test
-    public void createUsernameShouldThrowIllegalArgument() {
+    public void createInvalidUsernameShouldThrowIllegalArgument() {
 
 	for (final String username : new String[] { null, StringUtils.EMPTY,
 		WHITESPACE_STRING }) {
 
+	    final List<Permission> permissions = this.getPermissions();
+
 	    try {
 
-		this.service.create(username, PASSWORD);
+		this.service.create(username, PASSWORD, permissions);
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
@@ -107,28 +116,84 @@ public final class UserServiceTest extends AbstractServiceTest<User> {
     }
 
     @Test
-    public void createPasswordShouldThrowIllegalArgument() {
+    public void createInvalidPasswordShouldThrowIllegalArgument() {
 
 	for (final String password : new String[] { null, StringUtils.EMPTY,
 		WHITESPACE_STRING }) {
 
+	    final List<Permission> permissions = this.getPermissions();
+
 	    try {
 
-		this.service.create(USERNAME, password);
+		this.service.create(USERNAME, password, permissions);
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
 		LOGGER.debug("Expected illegal argument caught while testing.");
 	    }
 	}
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createNullPermissionsShouldThrowIllegalArgument() {
+	this.service.create(USERNAME, PASSWORD, null);
     }
 
     @Test
     public void createShouldNotReturnNull() {
 
-	final User user = this.service.create(USERNAME, PASSWORD);
+	final List<Permission> permissions = this.getPermissions();
+	final User user;
+
+	super.login(Permission.values());
+	user = this.service.create(USERNAME, PASSWORD, permissions);
+	super.logout();
 
 	Assert.assertNotNull(user);
+    }
+
+    @Test
+    public void createMixedPermissionsShouldNotReturnNull() {
+
+	final List<Permission> permissions = new ArrayList<Permission>();
+	final User user;
+
+	permissions.add(Permission.CREATE_MESSAGE);
+	permissions.add(Permission.CREATE_USER);
+
+	super.login(Permission.CREATE_USER, Permission.DELETE_MESSAGE);
+	user = this.service.create(USERNAME, PASSWORD, permissions);
+	super.logout();
+
+	Assert.assertNotNull(user);
+    }
+
+    @Test
+    public void readCurrentNotReturnNull() {
+
+	final User user;
+
+	super.login(Permission.values());
+	user = this.service.readCurrent();
+	super.logout();
+
+	Assert.assertNotNull(user);
+    }
+
+    @Test
+    public void updateMixedPermissionsShouldExecute() {
+
+	final List<Permission> permissions = new ArrayList<Permission>();
+	final User user = this.getModel();
+	final int id = super.getValidId();
+
+	permissions.add(Permission.CREATE_MESSAGE);
+	permissions.add(Permission.CREATE_USER);
+	user.setPermissions(permissions);
+
+	super.login(Permission.CREATE_USER, Permission.DELETE_MESSAGE);
+	this.service.update(id, user);
+	super.logout();
     }
 
     @Test
@@ -174,15 +239,21 @@ public final class UserServiceTest extends AbstractServiceTest<User> {
 
 	final User user = new User();
 	final int id = super.getValidId();
-	final Role[] rolesArray = Role.values();
-	final List<Role> roles = Arrays.asList(rolesArray);
+	final List<Permission> permissions = this.getPermissions();
 
 	user.setId(id);
 	user.setUsername(USERNAME);
 	user.setPassword(PASSWORD);
-	user.setRoles(roles);
+	user.setPermissions(permissions);
 
 	return user;
+    }
+
+    public List<Permission> getPermissions() {
+
+	final Permission[] permissions = Permission.values();
+
+	return Arrays.asList(permissions);
     }
 
 }

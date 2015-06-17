@@ -1,4 +1,5 @@
-<div ng-controller="UsersController as ctrl"
+<div ng-if="currentUser.hasPermission('READ_USER')"
+     ng-controller="UsersController as ctrl"
      ng-init="ctrl.init()"
      class="panel panel-default">
     <div class="panel-heading">
@@ -13,6 +14,7 @@
                     <div class="col-xs-6"></div>
                     <div class="col-xs-6">
                         <button type="button"
+                                ng-if="currentUser.hasPermission('CREATE_USER')"
                                 ng-disabled="addUser.visible"
                                 ng-click="ctrl.showAddUser()"
                                 class="col-xs-12 btn {{ addUser.visible ? 'btn-disabled' : 'btn-info' }} btn-md">
@@ -54,18 +56,62 @@
                         <div class="col-xs-4"></div>
                         <div class="col-xs-8 btn-group {{ ctrl.isEditUserValid() ? '' : 'has-feedback has-error' }}">
                             <button type="button"
+                                    ng-if="currentUser.hasPermission('CREATE_USER')"
                                     ng-disabled="!ctrl.isAddUserValid()"
-                                    ng-click="ctrl.create(addUser.username, addUser.password); ctrl.hideAddUser()"
+                                    ng-click="ctrl.create(addUser.username, addUser.password, addUser.permissions); ctrl.hideAddUser()"
                                     class="col-xs-6 btn {{ ctrl.isAddUserValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
                                 Create
                                 <span class="glyphicon glyphicon-ok" />
                             </button>
                             <button type="button"
                                     ng-click="ctrl.hideAddUser()"
-                                    class="col-xs-6 btn btn-danger btn-md">
+                                    class="{{ currentUser.hasPermission('CREATE_USER') ? 'col-xs-6' : 'col-xs-12' }} btn btn-danger btn-md">
                                 Cancel
                                 <span class="glyphicon glyphicon-remove" />
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <br />
+                <div class="col-xs-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Denied Permissions:
+                        </div>
+                        <div ui-on-drop="ctrl.removePermission($data)"
+                             class="panel-body">
+                            <div ng-repeat="permission in currentUser.getPermissions() track by $index">
+                                <div ng-if="!ctrl.hasPermission(permission)"
+                                     ui-draggable="true"
+                                     drag="permission">
+                                    <span class="col-xs-12 label label-default">
+                                        {{ ctrl.getDisplay(permission) }}
+                                    </span>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Granted Permissions:
+                        </div>
+                        <div ui-on-drop="ctrl.addPermission($data)"
+                             class="panel-body">
+                            <div ng-repeat="permission in currentUser.getPermissions() track by $index">
+                                <div ng-if="ctrl.hasPermission(permission)"
+                                     ui-draggable="true"
+                                     drag="permission">
+                                    <span class="col-xs-12 label label-warning">
+                                        {{ ctrl.getDisplay(permission) }}
+                                    </span>
+                                    <br />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -107,34 +153,78 @@
                             <div class="col-xs-4"></div>
                             <div class="col-xs-8 btn-group {{ userCtrl.isEditUserValid() ? '' : 'has-feedback has-error' }}">
                                 <button type="button"
-                                        ng-if="editUser.visible"
+                                        ng-if="currentUser.hasPermission('UPDATE_USER') &&editUser.visible"
                                         ng-disabled="!userCtrl.isEditUserValid()"
-                                        ng-click="ctrl.update(user.getId(), editUser.username, editUser.password); userCtrl.hideEditUser()"
+                                        ng-click="ctrl.update(user.getId(), editUser.username, editUser.password, editUser.permissions); userCtrl.hideEditUser()"
                                         class="col-xs-6 btn {{ userCtrl.isEditUserValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
                                     Update
                                     <span class="glyphicon glyphicon-ok" />
                                 </button>
                                 <button type="button"
-                                        ng-if="!editUser.visible"
-                                        ng-click="userCtrl.showEditUser(user.getUsername())"
-                                        class="col-xs-6 btn btn-warning btn-md">
+                                        ng-if="currentUser.hasPermission('UPDATE_USER') && !editUser.visible"
+                                        ng-click="userCtrl.showEditUser(user.getUsername(), user.getPermissions())"
+                                        class="{{ currentUser.hasPermission('DELETE_USER') ? 'col-xs-6' : 'col-xs-12' }} btn btn-warning btn-md">
                                     Edit
                                     <span class="glyphicon glyphicon-pencil" />
                                 </button>
                                 <button type="button"
                                         ng-if="editUser.visible"
                                         ng-click="userCtrl.hideEditUser()"
-                                        class="col-xs-6 btn btn-danger btn-md">
+                                        class="{{ currentUser.hasPermission('UPDATE_USER') ? 'col-xs-6' : 'col-xs-12' }} btn btn-danger btn-md">
                                     Cancel
                                     <span class="glyphicon glyphicon-remove" />
                                 </button>
                                 <button type="button"
-                                        ng-if="!editUser.visible"
+                                        ng-if="currentUser.hasPermission('DELETE_USER') && !editUser.visible"
                                         ng-click="ctrl.delete(user)"
-                                        class="col-xs-6 btn btn-danger btn-md">
+                                        class="{{ currentUser.hasPermission('UPDATE_USER') ? 'col-xs-6' : 'col-xs-12' }} btn btn-danger btn-md">
                                     Delete
                                     <span class="glyphicon glyphicon-trash" />
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="editUser.visible"
+                     class="row">
+                    <br />
+                    <div class="col-xs-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Denied Permissions:
+                            </div>
+                            <div ui-on-drop="userCtrl.removePermission($data)"
+                                 class="panel-body">
+                                <div ng-repeat="permission in currentUser.getPermissions() track by $index">
+                                    <div ng-if="!userCtrl.hasPermission(permission)"
+                                         ui-draggable="true"
+                                         drag="permission">
+                                        <span class="col-xs-12 label label-default">
+                                            {{ ctrl.getDisplay(permission) }}
+                                        </span>
+                                        <br />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Granted Permissions:
+                            </div>
+                            <div ui-on-drop="userCtrl.addPermission($data)"
+                                 class="panel-body">
+                                <div ng-repeat="permission in currentUser.getPermissions() track by $index">
+                                    <div ng-if="userCtrl.hasPermission(permission)"
+                                         ui-draggable="true"
+                                         drag="permission">
+                                        <span class="col-xs-12 label label-info">
+                                            {{ ctrl.getDisplay(permission) }}
+                                        </span>
+                                        <br />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

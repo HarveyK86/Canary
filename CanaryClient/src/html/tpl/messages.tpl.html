@@ -1,4 +1,5 @@
-<div ng-controller="MessagesController as ctrl"
+<div ng-if="currentUser.hasPermission('READ_MESSAGE')"
+     ng-controller="MessagesController as ctrl"
      ng-init="ctrl.init()"
      class="panel panel-default">
     <div class="panel-heading">
@@ -13,6 +14,7 @@
                     <div class="col-xs-6"></div>
                     <div class="col-xs-6">
                         <button type="button"
+                                ng-if="currentUser.hasPermission('CREATE_MESSAGE')"
                                 ng-disabled="addMessage.visible"
                                 ng-click="ctrl.showAddMessage()"
                                 class="col-xs-12 btn {{ addMessage.visible ? 'btn-disabled' : 'btn-info' }} btn-md">
@@ -38,6 +40,7 @@
                         <div class="col-xs-4"></div>
                         <div class="col-xs-8 btn-group">
                             <button type="button"
+                                    ng-if="currentUser.hasPermission('CREATE_MESSAGE')"
                                     ng-disabled="!ctrl.isAddMessageValid()"
                                     ng-click="ctrl.create(addMessage.value); ctrl.hideAddMessage()"
                                     class="col-xs-6 btn {{ ctrl.isAddMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
@@ -46,7 +49,7 @@
                             </button>
                             <button type="button"
                                     ng-click="ctrl.hideAddMessage()"
-                                    class="col-xs-6 btn btn-danger btn-md">
+                                    class="{{ currentUser.hasPermission('CREATE_MESSAGE') ? 'col-xs-6' : 'col-xs-12' }} btn btn-danger btn-md">
                                 Cancel
                                 <span class="glyphicon glyphicon-remove" />
                             </button>
@@ -74,7 +77,7 @@
                             <div class="col-xs-4"></div>
                             <div class="col-xs-8 btn-group">
                                 <button type="button"
-                                        ng-if="editMessage.visible"
+                                        ng-if="currentUser.hasPermission('UPDATE_MESSAGE') && editMessage.visible"
                                         ng-disabled="!messageCtrl.isEditMessageValid()"
                                         ng-click="ctrl.update(message.getId(), editMessage.value); messageCtrl.hideEditMessage()"
                                         class="col-xs-6 btn {{ messageCtrl.isEditMessageValid() ? 'btn-success' : 'btn-disabled' }} btn-md">
@@ -82,23 +85,23 @@
                                     <span class="glyphicon glyphicon-ok" />
                                 </button>
                                 <button type="button"
-                                        ng-if="!editMessage.visible"
+                                        ng-if="currentUser.hasPermission('UPDATE_MESSAGE') && !editMessage.visible"
                                         ng-click="messageCtrl.showEditMessage(message.getValue())"
-                                        class="col-xs-6 btn btn-warning btn-md">
+                                        class="{{ currentUser.hasPermission('DELETE_MESSAGE') ? 'col-xs-6' : 'col-xs-12' }} btn btn-warning btn-md">
                                     Edit
                                     <span class="glyphicon glyphicon-pencil" />
                                 </button>
                                 <button type="button"
                                         ng-if="editMessage.visible"
                                         ng-click="messageCtrl.hideEditMessage()"
-                                        class="col-xs-6 btn btn-danger btn-md">
+                                        class="{{ currentUser.hasPermission('UPDATE_MESSAGE') ? 'col-xs-6' : 'col-xs-12' }} btn btn-danger btn-md">
                                     Cancel
                                     <span class="glyphicon glyphicon-remove" />
                                 </button>
                                 <button type="button"
-                                        ng-if="!editMessage.visible"
+                                        ng-if="currentUser.hasPermission('DELETE_MESSAGE') && !editMessage.visible"
                                         ng-click="ctrl.delete(message)"
-                                        class="col-xs-6 btn btn-danger btn-md">
+                                        class="{{ currentUser.hasPermission('UPDATE_MESSAGE') ? 'col-xs-6' : 'col-xs-12' }} btn btn-danger btn-md">
                                     Delete
                                     <span class="glyphicon glyphicon-trash" />
                                 </button>

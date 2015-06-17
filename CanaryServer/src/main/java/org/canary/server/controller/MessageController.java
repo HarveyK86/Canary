@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.canary.server.model.Message;
 import org.canary.server.service.CrudService;
+import org.canary.server.service.MessageServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class MessageController extends AbstractController<Message> {
 
     @Autowired
-    private CrudService<Message> service;
+    private MessageServiceInterface service;
 
     private static final Logger LOGGER = Logger
 	    .getLogger(MessageController.class);
@@ -77,6 +78,15 @@ public class MessageController extends AbstractController<Message> {
 
     @Override
     public Message getValidModel(final int id, final Message candidate) {
+
+	LOGGER.debug("getValidModel[id=" + id + ", candidate=" + candidate
+		+ "]");
+
+	if (candidate == null) {
+
+	    throw new IllegalArgumentException(
+		    "Illegal argument; candidate cannot be null.");
+	}
 
 	final String value = candidate.getValue();
 	final Message message = this.service.read(id);

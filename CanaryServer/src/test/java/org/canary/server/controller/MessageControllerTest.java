@@ -175,6 +175,14 @@ public final class MessageControllerTest extends
 		response.getStatusCode());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void getValidModelShouldThrowIllegalArgument() {
+
+	final int id = super.getValidId();
+
+	this.controller.getValidModel(id, null);
+    }
+
     @Test
     public void getValidModelNoDateShouldNotReturnNull() {
 

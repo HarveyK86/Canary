@@ -38,8 +38,6 @@ public final class MessageServiceTest extends AbstractServiceTest<Message> {
 	ReflectionTestUtils.setField(this.service, "repository",
 		this.repository);
 
-	this.service.postConstruct();
-
 	Mockito.doCallRealMethod() //
 		.when(this.service) //
 		.create(Matchers.anyString());

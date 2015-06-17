@@ -1,11 +1,10 @@
 package org.canary.server.repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.canary.server.model.Role;
+import org.canary.server.model.Permission;
 import org.canary.server.model.User;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -23,27 +22,28 @@ public class UserRepository extends AbstractRepository<User> {
 	super();
     }
 
-    public User create(final String username, final String password) {
+    public User create(final String username, final String password,
+	    final List<Permission> permissions) {
 
 	LOGGER.debug("create[username=" + username + ", password=("
-		+ StringUtils.isNotBlank(password) + ")]");
+		+ StringUtils.isNotBlank(password) + "), permissions="
+		+ permissions + "]");
 
-	if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
+	if (StringUtils.isBlank(username) || StringUtils.isBlank(password)
+		|| permissions == null) {
 
 	    throw new IllegalArgumentException(
-		    "Illegal argument; username or password cannot be blank.");
+		    "Illegal argument; username or password cannot be blank "
+			    + "and permissions cannot be null.");
 	}
 
 	final User user = new User();
-	final List<Role> roles = new ArrayList<Role>();
 	final Session session = super.getSession();
 	final int id;
 
 	user.setUsername(username);
 	user.setPassword(password);
-
-	roles.add(Role.USER);
-	user.setRoles(roles);
+	user.setPermissions(permissions);
 
 	id = (int) session.save(user);
 

@@ -3,6 +3,7 @@
     font-weight: bold;
 }
 .field-label {
+    margin-bottom: 7px;
     margin-left: 13px;
     margin-top: 7px;
 }

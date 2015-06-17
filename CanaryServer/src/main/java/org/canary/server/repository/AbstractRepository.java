@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractRepository<Model extends Persistable> implements
@@ -54,6 +55,8 @@ public abstract class AbstractRepository<Model extends Persistable> implements
 
 	final Session session = this.getSession();
 	final Criteria criteria = session.createCriteria(this.clazz);
+
+	criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
 	return criteria.list();
     }

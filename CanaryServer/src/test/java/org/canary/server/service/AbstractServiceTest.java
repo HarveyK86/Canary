@@ -2,11 +2,12 @@ package org.canary.server.service;
 
 import java.util.List;
 
+import org.canary.server.model.Permission;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public abstract class AbstractServiceTest<Model> {
+public abstract class AbstractServiceTest<Model> extends AuthenticationTestBase {
 
     private CrudService<Model> service;
 
@@ -56,7 +57,9 @@ public abstract class AbstractServiceTest<Model> {
 
 	final Model model = this.getModel();
 
+	super.login(Permission.values());
 	this.service.update(ID, model);
+	super.logout();
     }
 
     @Test

@@ -1,4 +1,4 @@
-package org.canary.server.spring;
+package org.canary.server.component;
 
 import java.io.IOException;
 
@@ -27,6 +27,22 @@ public final class AuthenticationFailureHandlerTest {
 
     @InjectMocks
     public AuthenticationFailureHandler authenticationFailureHandler;
+
+    @Test(expected = IllegalArgumentException.class)
+    public void onAuthenticationFailureNullResponseShouldThrowIllegalArgument()
+	    throws ServletException, IOException {
+
+	this.authenticationFailureHandler.onAuthenticationFailure(this.request,
+		null, this.authenticationException);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void onAuthenticationFailureNullAuthenticationExceptionShouldThrowIllegalArgument()
+	    throws ServletException, IOException {
+
+	this.authenticationFailureHandler.onAuthenticationFailure(this.request,
+		this.response, null);
+    }
 
     @Test
     public void onAuthenticationFailureShouldExecute() throws ServletException,

@@ -52,7 +52,7 @@
 
 	<security:http>
 		<security:custom-filter ref="csrfFilter" before="LOGOUT_FILTER" />
-		<security:intercept-url pattern="/index" access="hasAuthority('USER')" />
+		<security:intercept-url pattern="/index" access="isAuthenticated()" />
 		<security:form-login
 			login-page="/login"
 			login-processing-url="/login_check"

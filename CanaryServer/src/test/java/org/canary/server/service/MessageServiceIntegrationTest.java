@@ -5,8 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.canary.server.model.Message;
-import org.canary.server.model.Role;
-import org.canary.server.spring.AuthenticationTestBase;
+import org.canary.server.model.Permission;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,14 +19,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public final class MessageServiceIntegrationTest extends AuthenticationTestBase {
 
     @Resource(name = "messageService")
-    private CrudService<Message> service;
+    private MessageServiceInterface service;
 
     private static final String VALUE = "Value";
     private static final String NEW_VALUE = "New Value";
 
     @Before
     public void before() {
-	super.login(Role.USER);
+	super.login(Permission.values());
     }
 
     @After

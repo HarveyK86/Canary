@@ -31,6 +31,8 @@ public final class ContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(final ServletContextEvent event) {
 
+	LOGGER.debug("contextInitialiszed[event=" + event + "]");
+
 	final Thread thread = Thread.currentThread();
 	final ClassLoader loader = thread.getContextClassLoader();
 	final InputStream input = loader.getResourceAsStream(this.path);
@@ -57,7 +59,7 @@ public final class ContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(final ServletContextEvent event) {
-	// do nothing
+	LOGGER.debug("contextDestroyed[event=" + event + "]");
     }
 
 }

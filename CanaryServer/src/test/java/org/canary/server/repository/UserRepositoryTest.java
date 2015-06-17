@@ -1,10 +1,12 @@
 package org.canary.server.repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.canary.server.model.Permission;
 import org.canary.server.model.User;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -39,6 +41,7 @@ public final class UserRepositoryTest extends AbstractRepositoryTest<User> {
     private static final Logger LOGGER = Logger.getLogger(UserRepository.class);
 
     @Override
+    @SuppressWarnings("unchecked")
     public CrudRepository<User> getRepository() {
 
 	final User user = this.getModel();
@@ -55,7 +58,8 @@ public final class UserRepositoryTest extends AbstractRepositoryTest<User> {
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
 		.create(Matchers.anyString(), //
-			Matchers.anyString());
+			Matchers.anyString(), //
+			Matchers.anyList());
 
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
@@ -111,14 +115,16 @@ public final class UserRepositoryTest extends AbstractRepositoryTest<User> {
     }
 
     @Test
-    public void createUsernameShouldThrowIllegalArgument() {
+    public void createInvalidUsernameShouldThrowIllegalArgument() {
 
 	for (final String username : new String[] { null, StringUtils.EMPTY,
 		WHITESPACE_STRING }) {
 
+	    final List<Permission> permissions = this.getPermissions();
+
 	    try {
 
-		this.repository.create(username, PASSWORD);
+		this.repository.create(username, PASSWORD, permissions);
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
@@ -128,26 +134,35 @@ public final class UserRepositoryTest extends AbstractRepositoryTest<User> {
     }
 
     @Test
-    public void createPasswordShouldThrowIllegalArgument() {
+    public void createInvalidPasswordShouldThrowIllegalArgument() {
 
 	for (final String password : new String[] { null, StringUtils.EMPTY,
 		WHITESPACE_STRING }) {
 
+	    final List<Permission> permissions = this.getPermissions();
+
 	    try {
 
-		this.repository.create(USERNAME, password);
+		this.repository.create(USERNAME, password, permissions);
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
 		LOGGER.debug("Expected illegal argument caught while testing.");
 	    }
 	}
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createNullPermissionsShouldThrowIllegalArgument() {
+	this.repository.create(USERNAME, PASSWORD, null);
     }
 
     @Test
     public void createShouldNotReturnNull() {
 
-	final User user = this.repository.create(USERNAME, PASSWORD);
+	final List<Permission> permissions = this.getPermissions();
+	final User user = this.repository.create(USERNAME, PASSWORD,
+		permissions);
 
 	Assert.assertNotNull(user);
     }
@@ -182,12 +197,21 @@ public final class UserRepositoryTest extends AbstractRepositoryTest<User> {
 
 	final int id = super.getValidId();
 	final User user = new User();
+	final List<Permission> permissions = this.getPermissions();
 
 	user.setId(id);
 	user.setUsername(USERNAME);
 	user.setPassword(PASSWORD);
+	user.setPermissions(permissions);
 
 	return user;
+    }
+
+    public List<Permission> getPermissions() {
+
+	final Permission[] permissions = Permission.values();
+
+	return Arrays.asList(permissions);
     }
 
 }

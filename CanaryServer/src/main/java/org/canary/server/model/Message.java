@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.log4j.Logger;
 import org.canary.server.repository.Persistable;
 
 @Entity
@@ -21,24 +22,41 @@ public final class Message implements Persistable {
     @Column(name = "Value")
     private String value;
 
+    private static final Logger LOGGER = Logger.getLogger(Message.class);
+
     public Message() {
+
 	super();
+
+	LOGGER.debug("constructor");
     }
 
     @Override
     public int getId() {
+
+	LOGGER.debug("getId");
+
 	return this.id;
     }
 
     public void setId(final int id) {
+
+	LOGGER.debug("setId[id=" + id + "]");
+
 	this.id = id;
     }
 
     public String getValue() {
+
+	LOGGER.debug("getvalue");
+
 	return this.value;
     }
 
     public void setValue(final String value) {
+
+	LOGGER.debug("setValue[value=" + value + "]");
+
 	this.value = value;
     }
 

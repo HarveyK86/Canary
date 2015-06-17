@@ -1,4 +1,4 @@
-package org.canary.server.spring;
+package org.canary.server.component;
 
 import java.io.IOException;
 
@@ -8,6 +8,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,6 +19,9 @@ public class AngularCSRFFilter extends OncePerRequestFilter {
 
     private static final String CSRF_TOKEN_NAME = "XSRF-TOKEN";
 
+    private static final Logger LOGGER = Logger
+	    .getLogger(AngularCSRFFilter.class);
+
     private AngularCSRFFilter() {
 	super();
     }
@@ -26,6 +30,9 @@ public class AngularCSRFFilter extends OncePerRequestFilter {
     protected void doFilterInternal(final HttpServletRequest request,
 	    final HttpServletResponse response, final FilterChain filterChain)
 	    throws ServletException, IOException {
+
+	LOGGER.debug("doFilterInternal[request=" + request + ", response="
+		+ response + ", filterChain=" + filterChain + "]");
 
 	final String csrfTokenName = CsrfToken.class.getName();
 	final CsrfToken csrfToken = (CsrfToken) request
@@ -58,6 +65,9 @@ public class AngularCSRFFilter extends OncePerRequestFilter {
 
     protected Cookie getCookie(final HttpServletRequest request,
 	    final String csrfTokenName) {
+
+	LOGGER.debug("getCookie[request=" + request + ", csrfTokenName="
+		+ csrfTokenName + "]");
 
 	return WebUtils.getCookie(request, csrfTokenName);
     }

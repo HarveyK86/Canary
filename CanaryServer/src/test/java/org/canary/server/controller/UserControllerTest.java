@@ -8,7 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.canary.server.model.Role;
+import org.canary.server.model.Permission;
 import org.canary.server.model.User;
 import org.canary.server.service.UserService;
 import org.junit.Assert;
@@ -44,6 +44,7 @@ public class UserControllerTest extends AbstractControllerTest<User> {
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
     @Override
+    @SuppressWarnings("unchecked")
     public CrudController getController() {
 
 	final User user = this.getModel();
@@ -66,6 +67,10 @@ public class UserControllerTest extends AbstractControllerTest<User> {
 
 	Mockito.doCallRealMethod() //
 		.when(this.controller) //
+		.readCurrent();
+
+	Mockito.doCallRealMethod() //
+		.when(this.controller) //
 		.readAll();
 
 	Mockito.doCallRealMethod() //
@@ -83,7 +88,17 @@ public class UserControllerTest extends AbstractControllerTest<User> {
 			Matchers.any(User.class));
 
 	Mockito.when(this.service //
+		.create(Matchers.anyString(), //
+			Matchers.anyString(), //
+			Matchers.anyList())) //
+		.thenReturn(user);
+
+	Mockito.when(this.service //
 		.read(Matchers.anyInt())) //
+		.thenReturn(user);
+
+	Mockito.when(this.service //
+		.readCurrent()) //
 		.thenReturn(user);
 
 	try {
@@ -124,13 +139,13 @@ public class UserControllerTest extends AbstractControllerTest<User> {
 
 	final User user = new User();
 	final int id = super.getValidId();
-	final Role[] rolesArray = Role.values();
-	final List<Role> roles = Arrays.asList(rolesArray);
+	final Permission[] permissionsArray = Permission.values();
+	final List<Permission> permissions = Arrays.asList(permissionsArray);
 
 	user.setId(id);
 	user.setUsername(USERNAME);
 	user.setPassword(PASSWORD);
-	user.setRoles(roles);
+	user.setPermissions(permissions);
 
 	return user;
     }
@@ -142,13 +157,6 @@ public class UserControllerTest extends AbstractControllerTest<User> {
 
     @Test
     public void createShouldReturnOK() {
-
-	final User user = this.getModel();
-
-	Mockito.when(this.service //
-		.create(Matchers.anyString(), //
-			Matchers.anyString())) //
-		.thenReturn(user);
 
 	final ResponseEntity<String> response = this.controller
 		.create(this.request);
@@ -177,6 +185,28 @@ public class UserControllerTest extends AbstractControllerTest<User> {
 		response.getStatusCode());
     }
 
+    @Test
+    public void readCurrentShouldReturnOK() {
+
+	final ResponseEntity<String> response = this.controller.readCurrent();
+
+	Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void readCurrentShouldReturnINTERNAL_SERVER_ERROR() {
+
+	Mockito.when(this.service //
+		.readCurrent()) //
+		.thenThrow(Exception.class);
+
+	final ResponseEntity<String> response = this.controller.readCurrent();
+
+	Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,
+		response.getStatusCode());
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public void readAllShouldReturnINTERNAL_SERVER_ERROR() {
@@ -189,6 +219,14 @@ public class UserControllerTest extends AbstractControllerTest<User> {
 
 	Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,
 		response.getStatusCode());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getValidModelShouldThrowIllegalArgument() {
+
+	final int id = super.getValidId();
+
+	this.controller.getValidModel(id, null);
     }
 
     @Test

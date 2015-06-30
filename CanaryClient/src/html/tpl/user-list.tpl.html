@@ -1,0 +1,77 @@
+<div ng-if="currentUser.hasPermission('READ_USER')"
+     ng-controller="UserListController as ctrl"
+     ng-init="ctrl.init()"
+     class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-8  panel-title">
+                Users
+            </div>
+            <div class="col-xs-4">
+                <button type="button"
+                        ng-if="currentUser.hasPermission('CREATE_USER')"
+                        ng-click="ctrl.enableForm('', [])"
+                        ng-disabled="ctrl.isFormEnabled()"
+                        class="col-xs-12 btn btn-md {{ ctrl.isFormEnabled() ? 'btn-disabled' : 'btn-info' }}">
+                    Add
+                    <span class="glyphicon glyphicon-plus" />
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div ng-if="ctrl.isFormEnabled()"
+             class="alert alert-warning">
+            <div class="row">
+                <div class="col-xs-8 {{ !ctrl.isUsernameFieldValid() ? 'has-feedback has-error' : '' }}">
+                    <input type="text"
+                           placeholder="Username"
+                           ng-model="form.username"
+                           class="form-control" />
+                </div>
+                <div class="col-xs-4 btn-group">
+                    <button type="button"
+                            ng-if="currentUser.hasPermission('CREATE_USER')"
+                            ng-click="ctrl.submitForm()"
+                            ng-disabled="!ctrl.isFormValid()"
+                            class="col-xs-6 btn btn-md {{ ctrl.isFormValid() ? 'btn-success' : 'btn-disabled' }}">
+                        Create
+                        <span class="glyphicon glyphicon-ok" />
+                    </button>
+                    <button type="button"
+                            ng-click="ctrl.disableForm()"
+                            class="btn btn-danger btn-md {{ currentUser.hasPermission('CREATE_USER') ? 'col-xs-6' : 'col-xs-12' }}">
+                        Cancel
+                        <span class="glyphicon glyphicon-remove" />
+                    </butto>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-xs-8 {{ !ctrl.isPasswordFieldValid() ? 'has-feedback has-error' : '' }}">
+                    <input type="password"
+                           placeholder="Password"
+                           ng-model="form.password"
+                           class="form-control" />
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-xs-8 {{ !ctrl.isConfirmPasswordFieldValid() ? 'has-feedback has-error' : '' }}">
+                    <input type="password"
+                           placeholder="Confirm Password"
+                           ng-model="form.confirmPassword"
+                           class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div ng-repeat="user in userList | orderBy:'-getId()'">
+            <div ng-include="'tpl/user-min.tpl.html'"></div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <br />
+        <div>
+    </div>
+</div>

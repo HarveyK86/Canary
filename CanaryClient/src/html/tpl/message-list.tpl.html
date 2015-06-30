@@ -1,0 +1,58 @@
+<div ng-if="currentUser.hasPermission('READ_MESSAGE')"
+     ng-controller="MessageListController as ctrl"
+     ng-init="ctrl.init()"
+     class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-8 panel-title">
+                Messages
+            </div>
+            <div class="col-xs-4">
+                <button type="button"
+                        ng-if="currentUser.hasPermission('CREATE_MESSAGE')"
+                        ng-click="ctrl.enableForm()"
+                        ng-disabled="ctrl.isFormEnabled()"
+                        class="col-xs-12 btn btn-md {{ ctrl.isFormEnabled() ? 'btn-disabled' : 'btn-info' }}">
+                    Add
+                    <span class="glyphicon glyphicon-plus" />
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div ng-if="ctrl.isFormEnabled()"
+             class="alert alert-warning">
+            <div class="row">
+                <div class="col-xs-8 {{ !ctrl.isValueFieldValid() ? 'has-feedback has-error' : '' }}">
+                    <input type="text"
+                           ng-model="form.value"
+                           class="form-control" />
+                </div>
+                <div class="col-xs-4 btn-group">
+                    <button type="button"
+                            ng-if="currentUser.hasPermission('CREATE_MESSAGE')"
+                            ng-click="ctrl.submitForm()"
+                            ng-disabled="!ctrl.isFormValid()"
+                            class="col-xs-6 btn btn-md {{ ctrl.isFormValid() ? 'btn-success' : 'btn-disabled' }}">
+                        Create
+                        <span class="glyphicon glyphicon-ok" />
+                    </button>
+                    <button type="button"
+                            ng-click="ctrl.disableForm()"
+                            class="btn btn-danger btn-md {{ currentUser.hasPermission('CREATE_MESSAGE') ? 'col-xs-6' : 'col-xs-12' }}">
+                        Cancel
+                        <span class="glyphicon glyphicon-remove" />
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div ng-repeat="message in messageList | orderBy:'-getId()'">
+            <div ng-include="'tpl/message.tpl.html'"></div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <br />
+        <div>
+    </div>
+</div>

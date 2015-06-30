@@ -1,0 +1,27 @@
+<div ng-if="currentUser.hasPermission('READ_USER')"
+     ng-controller="UserController as userCtrl"
+     class="alert alert-info">
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="field-label">
+                {{ user.getUsername() }}
+            </div>
+        </div>
+        <div class="col-xs-4 btn-group">
+            <button type="button"
+                    ng-if="currentUser.hasPermission('READ_USER')"
+                    ng-click="ctrl.goToUser(user)"
+                    class="btn btn-info btn-md {{ currentUser.hasPermission('DELETE_MESSAGE') ? 'col-xs-6' : 'col-xs-12' }}">
+                View
+                <span class="glyphicon glyphicon-user" />
+            </button>
+            <button type="button"
+                    ng-if="currentUser.hasPermission('DELETE_MESSAGE')"
+                    ng-click="ctrl.delete(user)"
+                    class="btn btn-danger btn-md {{ currentUser.hasPermission('READ_USER') ? 'col-xs-6' : 'col-xs-12' }}">
+                Delete
+                <span class="glyphicon glyphicon-trash" />
+            </button>
+        </div>
+    </div>
+</div>

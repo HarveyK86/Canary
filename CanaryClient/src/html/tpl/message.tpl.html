@@ -1,0 +1,47 @@
+<div ng-if="currentUser.hasPermission('READ_MESSAGE')"
+	 ng-controller="MessageController as messageCtrl"
+	 class="alert alert-info">
+	<div class="row">
+    	<div class="col-xs-8 {{ !messageCtrl.isValueFieldValid() ? 'has-feedback has-error' : ''}}">
+            <input type="text"
+                   ng-if="messageCtrl.isFormEnabled()"
+                   ng-model="messageForm.value"
+                   class="form-control" />
+            <div ng-if="!messageCtrl.isFormEnabled()"
+                 class="field-label">
+                {{ message.getValue() }}
+            </div>
+        </div>
+        <div class="col-xs-4 btn-group">
+            <button type="button"
+                    ng-if="currentUser.hasPermission('UPDATE_MESSAGE') && messageCtrl.isFormEnabled()"
+                    ng-click="messageCtrl.submitForm(message.getId())"
+                    ng-disabled="!messageCtrl.isFormValid()"
+                    class="col-xs-6 btn btn-md {{ messageCtrl.isFormValid() ? 'btn-success' : 'btn-disabled' }}">
+                Update
+                <span class="glyphicon glyphicon-ok" />
+            </button>
+            <button type="button"
+                    ng-if="currentUser.hasPermission('UPDATE_MESSAGE') && !messageCtrl.isFormEnabled()"
+                    ng-click="messageCtrl.enableForm(message.getValue())"
+                    class="btn btn-warning btn-md {{ currentUser.hasPermission('DELETE_MESSAGE') ? 'col-xs-6' : 'col-xs-12' }}">
+                Edit
+                <span class="glyphicon glyphicon-pencil" />
+            </button>
+            <button type="button"
+                    ng-if="messageCtrl.isFormEnabled()"
+                    ng-click="messageCtrl.disableForm()"
+                    class="btn btn-danger btn-md {{ currentUser.hasPermission('UPDATE_MESSAGE') ? 'col-xs-6' : 'col-xs-12' }}">
+                Cancel
+                <span class="glyphicon glyphicon-remove" />
+            </button>
+            <button type="button"
+                    ng-if="currentUser.hasPermission('DELETE_MESSAGE') && !messageCtrl.isFormEnabled()"
+                    ng-click="messageCtrl.delete(message)"
+                    class="btn btn-danger btn-md {{ currentUser.hasPermission('UPDATE_MESSAGE') ? 'col-xs-6' : 'col-xs-12' }}">
+                Delete
+                <span class="glyphicon glyphicon-trash" />
+            </button>
+        </div>
+    </div>
+</div>

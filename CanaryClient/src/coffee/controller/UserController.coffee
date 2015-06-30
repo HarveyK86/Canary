@@ -1,57 +1,93 @@
 module = angular.module("org.canary.controller")
 
-controller = ($scope) ->
+controller = ($routeParams, $scope, $window, service) ->
 	self = this
 
-	$scope.editUser =
+	$scope.userForm =
 		username: ""
 		password: ""
 		confirmPassword: ""
 		permissions: []
-		visible: false
+		enabled: false
 
-	self.showEditUser = (username, permissions) ->
-		$scope.editUser =
-			username: username
-			password: ""
-			confirmPassword: ""
-			permissions: permissions
-			visible: true
+	self.init = () ->
+		service.read($routeParams.userId, self.onRead)
 
-	self.hideEditUser = () ->
-		$scope.editUser.visible = false
+	self.isFormEnabled = () ->
+		$scope.userForm.enabled
 
-	self.isEditUserValid = () ->
-		self.isUsernameValid() && self.isPasswordValid() && self.isConfirmPasswordValid()
+	self.enableForm = () ->
+		$scope.userForm.username = $scope.user.getUsername()
+		$scope.userForm.password = ""
+		$scope.userForm.confirmPassword = ""
+		self.copyPermissions($scope.user.getPermissions())
+		$scope.userForm.enabled = true
 
-	self.isUsernameValid = () ->
-		$scope.editUser.username != null && $scope.editUser.username != ""
+	self.disableForm = () ->
+		$scope.userForm.username = ""
+		$scope.userForm.password = ""
+		$scope.userForm.confirmPassword = ""
+		self.copyPermissions($scope.user.getPermissions())
+		$scope.userForm.enabled = false
 
-	self.isPasswordValid = () ->
+	self.isUsernameFieldValid = () ->
+		$scope.userForm.username != null && $scope.userForm.username != ""
+
+	self.isPasswordFieldValid = () ->
 		true
 
-	self.isConfirmPasswordValid = () ->
-		$scope.editUser.confirmPassword == $scope.editUser.password
+	self.isConfirmPasswordFieldValid = () ->
+		$scope.userForm.confirmPassword == $scope.userForm.password
 
-	self.hasPermission = (permission) ->
-		$scope.editUser.permissions.indexOf(permission) != -1
+	self.isPermissionBeingGranted = (permission) ->
+		$scope.userForm.permissions.indexOf(permission) != -1
 
-	self.addPermission = (permission) ->
-		$scope.editUser.permissions.push(permission)
+	self.grantPermission = (permission) ->
+		$scope.userForm.permissions.push(permission)
 
-	self.removePermission = (permission) ->
-		index = $scope.editUser.permissions.indexOf(permission)
+	self.denyPermission = (permission) ->
+		index = $scope.userForm.permissions.indexOf(permission)
 		if index != -1
-			$scope.editUser.permissions.splice(index, 1)
+			$scope.userForm.permissions.splice(index, 1)
 
-	showEditUser: self.showEditUser
-	hideEditUser: self.hideEditUser
-	isUsernameValid: self.isUsernameValid
-	isPasswordValid: self.isPasswordValid
-	isConfirmPasswordValid: self.isConfirmPasswordValid
-	isEditUserValid: self.isEditUserValid
-	hasPermission: self.hasPermission
-	addPermission: self.addPermission
-	removePermission: self.removePermission
+	self.isFormValid = () ->
+		self.isUsernameFieldValid() && self.isPasswordFieldValid() && self.isConfirmPasswordFieldValid()
 
-module.controller("UserController", ["$scope", controller])
+	self.submitForm = () ->
+		service.update($scope.user.getId(), $scope.userForm.username, $scope.userForm.password, $scope.userForm.permissions, self.onUpdate)
+
+	self.getPermissionDisplayString = (permission) ->
+		words = permission.split("_")
+		displayString = ""
+		for word in words
+			displayString += word.charAt(0) + word.substr(1, word.length - 1).toLowerCase() + " "
+		displayString.trim()
+
+	self.copyPermissions = (permissions) ->
+		$scope.userForm.permissions.splice(0, $scope.userForm.permissions.length)
+		for permission in permissions
+			$scope.userForm.permissions.push(permission)
+
+	self.onRead = (user) ->
+		$scope.user = user
+		self.copyPermissions(user.getPermissions())
+
+	self.onUpdate = () ->
+		self.init()
+		self.disableForm()
+
+	init: self.init
+	isFormEnabled: self.isFormEnabled
+	enableForm: self.enableForm
+	disableForm: self.disableForm
+	isUsernameFieldValid: self.isUsernameFieldValid
+	isPasswordFieldValid: self.isPasswordFieldValid
+	isConfirmPasswordFieldValid: self.isConfirmPasswordFieldValid
+	isPermissionBeingGranted: self.isPermissionBeingGranted
+	grantPermission: self.grantPermission
+	denyPermission: self.denyPermission
+	isFormValid: self.isFormValid
+	submitForm: self.submitForm
+	getPermissionDisplayString: self.getPermissionDisplayString
+
+module.controller("UserController", ["$routeParams", "$scope", "$window", "UserService", controller])

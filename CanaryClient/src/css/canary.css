@@ -1,9 +1,22 @@
-.panel-title {
-    font-size: 24px;
-    font-weight: bold;
-}
 .field-label {
     margin-bottom: 7px;
     margin-left: 13px;
     margin-top: 7px;
+}
+.panel-label-active {
+	border-bottom: 0px;
+	font-size: 12px;
+	height: 18px;
+	padding: 1px;
+	text-align: center;
+}
+.panel-label-inactive {
+	height: 20px;
+}
+.panel-label-margin {
+	margin-bottom: 4px;
+}
+.panel-title {
+    font-size: 24px;
+    font-weight: bold;
 }

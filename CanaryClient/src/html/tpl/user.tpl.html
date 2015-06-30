@@ -1,0 +1,141 @@
+<div ng-if="currentUser.hasPermission('READ_USER')"
+     ng-controller="UserController as ctrl"
+     ng-init="ctrl.init()"
+     class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-8 panel-title">
+                User: {{ user.getUsername() }}
+            </div>
+            <div class="col-xs-4 btn-group">
+                <button type="button"
+                        ng-if="currentUser.hasPermission('UPDATE_USER') && ctrl.isFormEnabled()"
+                        ng-click="ctrl.submitForm()"
+                        ng-disabled="!ctrl.isFormValid()"
+                        class="col-xs-6 btn btn-md {{ ctrl.isFormValid() ? 'btn-success' : 'btn-disabled' }}">
+                    Update
+                    <span class="glyphicon glyphicon-ok" />
+                </button>
+                <button type="button"
+                        ng-if="currentUser.hasPermission('UPDATE_USER') && !ctrl.isFormEnabled()"
+                        ng-click="ctrl.enableForm()"
+                        class="col-xs-12 btn btn-warning btn-md">
+                    Edit
+                    <span class="glyphicon glyphicon-pencil" />
+                </button>
+                <button type="button"
+                        ng-if="ctrl.isFormEnabled()"
+                        ng-click="ctrl.disableForm()"
+                        class="btn btn-danger btn-md {{ currentUser.hasPermission('UPDATE_USER') ? 'col-xs-6' : 'col-xs-12' }}">
+                    Cancel
+                    <span class="glyphicon glyphicon-remove" />
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="text-right field-label">
+                    Username:
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div ng-if="ctrl.isFormEnabled()"
+                     class="{{ ctrl.isUsernameFieldValid() ? '' : 'has-feedback has-error' }}">
+                    <input type="text"
+                           ng-model="userForm.username"
+                           class="form-control" />
+                </div>
+                <div ng-if="!ctrl.isFormEnabled()"
+                     class="field-label">
+                    {{ user.getUsername() }}
+                </div>
+            </div>
+        </div>
+        <br />
+        <div ng-if="currentUser.hasPermission('UPDATE_USER')">
+            <div class="row">
+                <div class="col-xs-3">
+                    <div class="text-right field-label">
+                        Password:
+                    </div>
+                </div>
+                <div class="col-xs-6 {{ ctrl.isPasswordFieldValid() ? '' : 'has-feedback has-error' }}">
+                    <input type="password"
+                           placeholder="Password (Unchanged)"
+                           ng-disabled="!ctrl.isFormEnabled()"
+                           ng-model="userForm.password"
+                           class="form-control" />
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-xs-3">
+                    <div class="text-right field-label">
+                        Confirm Password:
+                    </div>
+                </div>
+                <div class="col-xs-6 {{ ctrl.isConfirmPasswordFieldValid() ? '' : 'has-feedback has-error' }}">
+                    <input type="password"
+                           placeholder="Confirm Password"
+                           ng-disabled="!ctrl.isFormEnabled()"
+                           ng-model="userForm.confirmPassword"
+                           class="form-control" />
+                </div>
+            </div>
+            <br />
+        </div>
+        <div class="row">
+            <div ng-if="currentUser.hasPermission('UPDATE_USER')"
+                 class="col-xs-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Denied Permissions
+                    </div>
+                    <div ui-on-drop="ctrl.denyPermission($data)"
+                         class="panel-body">
+                        <div ng-repeat="permission in currentUser.getPermissions() track by $index"
+                             ng-if="!ctrl.isPermissionBeingGranted(permission)"
+                             ui-draggable="{{ ctrl.isFormEnabled() }}"
+                             drag="permission"
+                             class="panel panel-default panel-label-margin">
+                            <div class="panel-heading panel-label-active">
+                                {{ ctrl.getPermissionDisplayString(permission) }}
+                            </div>
+                        </div>
+                        <div ng-repeat="permission in currentUser.getPermissions()"
+                             ng-if="ctrl.isPermissionBeingGranted(permission)" class="panel panel-default panel-label-margin panel-label-inactive"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="{{ currentUser.hasPermission('UPDATE_USER') ? 'col-xs-6' : 'col-xs-12' }}">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Granted Permissions
+                    </div>
+                    <div ui-on-drop="ctrl.grantPermission($data)"
+                         class="panel-body">
+                        <div ng-repeat="permission in currentUser.getPermissions() track by $index"
+                             ng-if="ctrl.isPermissionBeingGranted(permission)"
+                             ui-draggable="{{ ctrl.isFormEnabled() }}"
+                             drag="permission"
+                             class="panel panel-info panel-label-margin">
+                            <div class="panel-heading panel-label-active">
+                                {{ ctrl.getPermissionDisplayString(permission) }}
+                            </div>
+                        </div>
+                        <div ng-repeat="permission in currentUser.getPermissions()"
+                             ng-if="!ctrl.isPermissionBeingGranted(permission)"
+                             class="panel panel-default panel-label-margin panel-label-inactive"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <br />
+        <div>
+    </div>
+</div>

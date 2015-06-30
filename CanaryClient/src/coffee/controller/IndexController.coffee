@@ -1,66 +1,76 @@
 module = angular.module("org.canary.controller")
 
-controller = ($scope, $location, $window, userService) ->
+controller = ($scope, $location, $http, $window, userService) ->
     self = this
 
-    self.messages =
+    self.messagesPage =
         name: "Messages"
-        permission: "READ_MESSAGE"
+        readPermission: "READ_MESSAGE"
+        enabled: false
 
-    self.users =
+    self.usersPage =
         name: "Users"
-        permission: "READ_USER"
+        readPermission: "READ_USER"
+        enabled: false
 
-    self.logoutError =
-        name: "LogoutError"
-        template: "tpl/logout-error.tpl.html"
+    self.logoutFailureAlert =
+        name: "LogoutFailure"
+        template: "tpl/logout-failure.tpl.html"
 
-    $scope.pages = [
-        self.messages,
-        self.users
+    $scope.availablePages = [
+        self.messagesPage,
+        self.usersPage
     ]
 
-    $scope.alerts = [
-        self.logoutError
+    $scope.availableAlerts = [
+        self.logoutFailureAlert
     ]
         
     self.init = () ->
         path = $location.path()
-        found = false
-        for page in $scope.pages
-            if "/" + page.name == path
-                self.setActive(page)
-                found = true
-        if found
-            parameters = $location.search()
-            for alert in $scope.alerts
-                if alert.name == parameters.alert
-                    self.setAlert(alert)
+        if path == ""
+            self.goToHome()
         else
-            self.goToPage(self.messages)
-        userService.readCurrent(self.onReadCurrent)
+            for page in $scope.availablePages
+                page.enabled = path == "/" + page.name
+            parameters = $location.search()
+            for alert in $scope.availableAlerts
+                alert.enabled = parameters.alert == alert.name
+            userService.readCurrent(self.onReadCurrent)
 
     self.goToHome = () ->
-        $window.location.href = "index#/Home"
-        $window.location.reload()
+        self.goToPage(self.messagesPage)
 
     self.goToPage = (page) ->
         $window.location.href = "index#/" + page.name
         $window.location.reload()
 
-    self.setActive = (page) ->
-        for current in $scope.pages
-            current.active = current == page
+    self.goToCurrentUser = () ->
+        $window.location.href = "index#/User/" + $scope.currentUser.getId()
+        $window.location.reload()
 
-    self.setAlert = (alert) ->
-        for current in $scope.alerts
-            current.visible = current == alert
+    self.logout = () ->
+        post =
+            method: "POST"
+            url: "logout"
+
+        $http(post).success(self.onLogoutSuccess).error(self.onLogoutFailure)
+
+    self.onLogoutSuccess = () ->
+        $window.location.href = "login#?alert=LogoutSuccess"
+
+    self.onLogoutFailure = () ->
+        path = $location.path()
+        $window.location.href = "index#" + path + "?alert=LogoutError"
+        $window.location.reload()
 
     self.onReadCurrent = (currentUser) ->
         $scope.currentUser = currentUser
 
-    init = self.init
-    goToHome = self.goToHome
-    goToPage = self.goToPage
+    init: self.init
+    goToHome: self.goToHome
+    goToPage: self.goToPage
+    goToCurrentUser: self.goToCurrentUser
+    logout: self.logout
 
-module.controller("IndexController", ["$scope", "$location", "$window", "UserService", controller])
+module.controller("IndexController", ["$scope", "$location", "$http", "$window", "UserService", controller])

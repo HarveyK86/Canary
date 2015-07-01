@@ -130,7 +130,7 @@ module.exports = (grunt) ->
                     war_dist_folder: "build"
                     war_name: "canary-client"
                     webxml_welcome: "index.html"
-                    webxml_display_name: "Canary Client v" + if "<%= self.diff %>" == "" then "<%= pkg.version %>.<%= self.hash %>" else "<%= pkg.version %>.<%= self.hash %> (<%= self.diff %>)"
+                    webxml_display_name: "Canary Client v" + if "<%= self.diff %>" == "" then "<%= pkg.version %>.<%= self.hash %>" else "<%= pkg.version %>.<%= self.hash %> (development)"
                 files: [
                     expand: true
                     cwd: "build"

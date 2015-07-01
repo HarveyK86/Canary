@@ -122,6 +122,9 @@ module.exports = (grunt) ->
                 options:
                     storeOutputTo: "self.hash"
 
+            git_status:
+                command: "status"
+
         #grunt-war
         war:
 
@@ -130,7 +133,7 @@ module.exports = (grunt) ->
                     war_dist_folder: "build"
                     war_name: "canary-client"
                     webxml_welcome: "index.html"
-                    webxml_display_name: "Canary Client v" + if "<%= self.diff %>" == "" then "<%= pkg.version %>.<%= self.hash %>" else "<%= pkg.version %>.<%= self.hash %> (<%= self.diff %>)"
+                    webxml_display_name: "Canary Client v" + if "<%= self.diff %>" == "" then "<%= pkg.version %>.<%= self.hash %>" else "<%= pkg.version %>.<%= self.hash %> (development)"
                 files: [
                     expand: true
                     cwd: "build"
@@ -150,7 +153,8 @@ module.exports = (grunt) ->
                                  "copy:fonts",
                                  "copy:html",
                                  "copy:tpl",
-                                 "gta:git_diff"
+                                 "gta:git_status",
+                                 "gta:git_diff",
                                  "gta:git_rev_parse",
                                  "war:build"])
 

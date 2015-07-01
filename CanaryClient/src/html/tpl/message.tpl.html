@@ -1,3 +1,8 @@
+<div class="field-label">
+    <b>
+        {{ message.getAuthor() }} said...
+    </b>
+</div>
 <div ng-if="currentUser.hasPermission('READ_MESSAGE')"
 	 ng-controller="MessageController as messageCtrl"
 	 class="alert alert-info">

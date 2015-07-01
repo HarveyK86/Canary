@@ -304,8 +304,8 @@
 			</classpath>
 			<transaction src="${main.sql}/drop-database.sql" />
 			<transaction src="${main.sql}/create-database.sql" />
-			<transaction src="${main.sql}/tables/message.sql" />
 			<transaction src="${main.sql}/tables/user.sql" />
+			<transaction src="${main.sql}/tables/message.sql" />
 			<transaction src="${main.sql}/tables/permission.sql" />
 			<transaction src="${main.sql}/tables/user_permission.sql" />
 			<transaction src="${main.sql}/data.sql" />

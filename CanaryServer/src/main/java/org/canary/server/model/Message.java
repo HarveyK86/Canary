@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.log4j.Logger;
@@ -18,6 +20,10 @@ public final class Message implements Persistable {
     @Column(name = "Id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "AuthorUser_Id")
+    private User author;
 
     @Column(name = "Value")
     private String value;
@@ -46,6 +52,20 @@ public final class Message implements Persistable {
 	this.id = id;
     }
 
+    public User getAuthor() {
+
+	LOGGER.debug("getAuthor");
+
+	return this.author;
+    }
+
+    public void setAuthor(final User author) {
+
+	LOGGER.debug("setAuthor[author=" + author + "]");
+
+	this.author = author;
+    }
+
     public String getValue() {
 
 	LOGGER.debug("getvalue");
@@ -58,6 +78,13 @@ public final class Message implements Persistable {
 	LOGGER.debug("setValue[value=" + value + "]");
 
 	this.value = value;
+    }
+
+    @Override
+    public String toString() {
+
+	return "Message [id=" + this.id + ", author=" + this.author
+		+ ", value=" + this.value + "]";
     }
 
 }

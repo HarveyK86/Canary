@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.canary.server.model.Message;
+import org.canary.server.model.User;
 import org.canary.server.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,7 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class MessageService implements MessageServiceInterface {
 
     @Autowired
-    private MessageRepository repository;
+    private UserServiceInterface userService;
+
+    @Autowired
+    private MessageRepository messageRepository;
 
     private static final Logger LOGGER = Logger.getLogger(MessageService.class);
 
@@ -36,7 +40,9 @@ public class MessageService implements MessageServiceInterface {
 		    "Illegal argument; value cannot be blank.");
 	}
 
-	return this.repository.create(value);
+	final User currentUser = this.userService.readCurrent();
+
+	return this.messageRepository.create(currentUser, value);
     }
 
     @Override
@@ -46,7 +52,7 @@ public class MessageService implements MessageServiceInterface {
 
 	LOGGER.debug("read[id=" + id + "]");
 
-	return this.repository.read(id);
+	return this.messageRepository.read(id);
     }
 
     @Override
@@ -56,7 +62,7 @@ public class MessageService implements MessageServiceInterface {
 
 	LOGGER.debug("readAll");
 
-	return this.repository.readAll();
+	return this.messageRepository.readAll();
     }
 
     @Override
@@ -72,7 +78,7 @@ public class MessageService implements MessageServiceInterface {
 		    "Illegal argument; message cannot be null.");
 	}
 
-	this.repository.update(id, message);
+	this.messageRepository.update(id, message);
     }
 
     @Override
@@ -82,7 +88,7 @@ public class MessageService implements MessageServiceInterface {
 
 	LOGGER.debug("delete[id=" + id + "]");
 
-	this.repository.delete(id);
+	this.messageRepository.delete(id);
     }
 
 }

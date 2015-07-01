@@ -1,8 +1,13 @@
 package org.canary.server.service;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.canary.server.model.Message;
+import org.canary.server.model.Permission;
+import org.canary.server.model.User;
 import org.canary.server.repository.MessageRepository;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,12 +22,17 @@ import org.springframework.test.util.ReflectionTestUtils;
 public final class MessageServiceTest extends AbstractServiceTest<Message> {
 
     @Mock
-    private MessageRepository repository;
+    private UserService userService;
 
-    private MessageService service;
+    @Mock
+    private MessageRepository messageRepository;
+
+    private MessageService messageService;
 
     private static final String WHITESPACE_STRING = " ";
-    private static final String MESSAGE = "Message";
+    private static final String VALUE = "Value";
+    private static final String USERNAME = "Username";
+    private static final String PASSWORD = "Password";
 
     private static final Logger LOGGER = Logger
 	    .getLogger(MessageServiceTest.class);
@@ -32,42 +42,50 @@ public final class MessageServiceTest extends AbstractServiceTest<Message> {
 
 	final int id = super.getValidId();
 	final Message canary = this.getModel();
+	final User user = this.getUser();
 
-	this.service = Mockito.mock(MessageService.class);
+	this.messageService = Mockito.mock(MessageService.class);
 
-	ReflectionTestUtils.setField(this.service, "repository",
-		this.repository);
+	ReflectionTestUtils.setField(this.messageService, "userService",
+		this.userService);
+	ReflectionTestUtils.setField(this.messageService, "messageRepository",
+		this.messageRepository);
 
 	Mockito.doCallRealMethod() //
-		.when(this.service) //
+		.when(this.messageService) //
 		.create(Matchers.anyString());
 
 	Mockito.doCallRealMethod() //
-		.when(this.service) //
+		.when(this.messageService) //
 		.read(Matchers.anyInt());
 
 	Mockito.doCallRealMethod() //
-		.when(this.service) //
+		.when(this.messageService) //
 		.readAll();
 
 	Mockito.doCallRealMethod() //
-		.when(this.service) //
+		.when(this.messageService) //
 		.update(Matchers.anyInt(), //
 			Matchers.any(Message.class));
 
 	Mockito.doCallRealMethod() //
-		.when(this.service) //
+		.when(this.messageService) //
 		.delete(Matchers.anyInt());
 
-	Mockito.when(this.repository //
+	Mockito.when(this.userService //
+		.readCurrent()) //
+		.thenReturn(user);
+
+	Mockito.when(this.messageRepository //
 		.read(Matchers.eq(id))) //
 		.thenReturn(canary);
 
-	Mockito.when(this.repository //
-		.create(Matchers.anyString())) //
+	Mockito.when(this.messageRepository //
+		.create(Matchers.any(User.class), //
+			Matchers.anyString())) //
 		.thenReturn(canary);
 
-	return this.service;
+	return this.messageService;
     }
 
     @Test
@@ -78,7 +96,7 @@ public final class MessageServiceTest extends AbstractServiceTest<Message> {
 
 	    try {
 
-		this.service.create(message);
+		this.messageService.create(message);
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
@@ -90,7 +108,7 @@ public final class MessageServiceTest extends AbstractServiceTest<Message> {
     @Test
     public void createShouldNotReturnNull() {
 
-	final Message canary = this.service.create(MESSAGE);
+	final Message canary = this.messageService.create(VALUE);
 
 	Assert.assertNotNull(canary);
     }
@@ -102,9 +120,24 @@ public final class MessageServiceTest extends AbstractServiceTest<Message> {
 	final Message canary = new Message();
 
 	canary.setId(id);
-	canary.setValue(MESSAGE);
+	canary.setValue(VALUE);
 
 	return canary;
+    }
+
+    private User getUser() {
+
+	final int id = super.getValidId();
+	final User user = new User();
+	final Permission[] permissionsArray = Permission.values();
+	final List<Permission> permissions = Arrays.asList(permissionsArray);
+
+	user.setId(id);
+	user.setUsername(USERNAME);
+	user.setPassword(PASSWORD);
+	user.setPermissions(permissions);
+
+	return user;
     }
 
 }

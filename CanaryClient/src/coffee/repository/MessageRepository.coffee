@@ -14,6 +14,7 @@ repository = ($resource) ->
         self.resource.get(id: messageId, (response) ->
             message = new Message()
             message.setId(response.id)
+            message.setAuthor(response.author.username)
             message.setValue(response.value)
             callback(message))
 
@@ -23,6 +24,7 @@ repository = ($resource) ->
             for obj in response
                 message = new Message()
                 message.setId(obj.id)
+                message.setAuthor(obj.author.username)
                 message.setValue(obj.value)
                 messages.push(message)
             callback(messages))

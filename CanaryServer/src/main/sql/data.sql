@@ -1,7 +1,3 @@
--- canary
-INSERT INTO `canary`.`message` (`Value`)
-VALUES ('Hello, World!');
-
 -- permission
 SET SQL_MODE=(SELECT CONCAT(@@SQL_MODE, ',NO_AUTO_VALUE_ON_ZERO'));
 

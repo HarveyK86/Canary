@@ -171,4 +171,9 @@ public final class User implements Persistable, UserDetails {
 	return true;
     }
 
+    @Override
+    public String toString() {
+	return "User [id=" + this.id + ", username=" + this.username + "]";
+    }
+
 }

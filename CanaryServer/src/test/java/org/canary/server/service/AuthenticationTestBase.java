@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class AuthenticationTestBase {
 
+    private static final int ID = 1;
     private static final String USERNAME = "Username";
     private static final String PASSWORD = "Password";
 
@@ -23,6 +24,7 @@ public class AuthenticationTestBase {
 	final SecurityContext securityContext = SecurityContextHolder
 		.getContext();
 
+	user.setId(ID);
 	user.setUsername(USERNAME);
 	user.setPassword(PASSWORD);
 	user.setPermissions(permissionsList);

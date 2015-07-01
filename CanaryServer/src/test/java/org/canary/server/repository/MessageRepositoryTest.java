@@ -1,11 +1,14 @@
 package org.canary.server.repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.canary.server.model.Message;
+import org.canary.server.model.Permission;
+import org.canary.server.model.User;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -35,6 +38,8 @@ public final class MessageRepositoryTest extends
 
     private static final String WHITESPACE_STRING = " ";
     private static final String VALUE = "Value";
+    private static final String USERNAME = "Username";
+    private static final String PASSWORD = "Password";
 
     private static final Logger LOGGER = Logger
 	    .getLogger(MessageRepositoryTest.class);
@@ -55,7 +60,8 @@ public final class MessageRepositoryTest extends
 
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
-		.create(Matchers.anyString());
+		.create(Matchers.any(User.class), //
+			Matchers.anyString());
 
 	Mockito.doCallRealMethod() //
 		.when(this.repository) //
@@ -102,15 +108,22 @@ public final class MessageRepositoryTest extends
 	return this.repository;
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void createNullAuthorShouldThrowIllegalArgument() {
+	this.repository.create(null, VALUE);
+    }
+
     @Test
-    public void createShouldThrowIllegalArgument() {
+    public void createInvalidValueShouldThrowIllegalArgument() {
 
 	for (final String value : new String[] { null, StringUtils.EMPTY,
 		WHITESPACE_STRING }) {
 
+	    final User user = this.getUser();
+
 	    try {
 
-		this.repository.create(value);
+		this.repository.create(user, value);
 		Assert.fail();
 
 	    } catch (final IllegalArgumentException e) {
@@ -122,7 +135,8 @@ public final class MessageRepositoryTest extends
     @Test
     public void createShouldNotReturnNull() {
 
-	final Message message = this.repository.create(VALUE);
+	final User user = this.getUser();
+	final Message message = this.repository.create(user, VALUE);
 
 	Assert.assertNotNull(message);
     }
@@ -137,6 +151,21 @@ public final class MessageRepositoryTest extends
 	message.setValue(VALUE);
 
 	return message;
+    }
+
+    private User getUser() {
+
+	final int id = super.getValidId();
+	final User user = new User();
+	final Permission[] permissionsArray = Permission.values();
+	final List<Permission> permissions = Arrays.asList(permissionsArray);
+
+	user.setId(id);
+	user.setUsername(USERNAME);
+	user.setPassword(PASSWORD);
+	user.setPermissions(permissions);
+
+	return user;
     }
 
 }

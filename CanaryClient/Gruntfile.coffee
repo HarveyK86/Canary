@@ -10,11 +10,6 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks("grunt-git-them-all")
     grunt.loadNpmTasks("grunt-war")
 
-    self = this
-
-    self.hash = ""
-    self.diff = ""
-
     grunt.initConfig(
         pkg: grunt.file.readJSON("package.json")
 
@@ -24,13 +19,13 @@ module.exports = (grunt) ->
             build:
                 src: ["build/**"]
 
-            coffee:
+            coffee_build:
                 src: ["build/coffee/**"]
 
         #grunt-contrib-coffee
         coffee:
 
-            convert:
+            convert_to_js:
                 files: "build/js/canary.js": ["build/coffee/canary.coffee"]
 
         #grunt-contrib-concat
@@ -77,29 +72,30 @@ module.exports = (grunt) ->
         #grunt-contrib-cssmin
         cssmin:
 
-            run:
+            minify_css:
                 files: "build/css/canary.min.css": ["build/css/canary.css"]
 
         #grunt-contrib-uglify
         uglify:
 
-            jsmin:
+            minify_js:
                 files: "build/js/canary.min.js": ["build/js/canary.js"]
 
         #grunt-contrib-watch
-        run_watch:
+        watch_files:
 
             coffee:
                 files: ["src/coffee/**/*.coffee"]
                 tasks: ["concat:coffee",
-                        "coffee:convert",
+                        "coffee:convert_to_js",
+                        "clean:coffee_build",
                         "concat:js",
-                        "uglify:jsmin"]
+                        "uglify:minify_js"]
 
             css:
                 files: ["src/css/**/*.css"]
                 tasks: ["concat:css",
-                        "cssmin:run"]
+                        "cssmin:minify_css"]
 
             html:
                 files: ["src/html/*.html"]
@@ -115,25 +111,26 @@ module.exports = (grunt) ->
             git_diff:
                 command: "diff --shortstat HEAD"
                 options:
-                    storeOutputTo: "self.diff"
+                    storeOutputTo: "diff"
+                    postProcessOutput: (output) ->
+                        output.trim()
 
             git_rev_parse:
                 command: "rev-parse --short HEAD"
                 options:
-                    storeOutputTo: "self.hash"
-
-            git_status:
-                command: "status"
+                    storeOutputTo: "hash"
+                    postProcessOutput: (output) ->
+                        output.trim()
 
         #grunt-war
         war:
 
-            build:
+           build:
                 options:
                     war_dist_folder: "build"
                     war_name: "canary-client"
                     webxml_welcome: "index.html"
-                    webxml_display_name: "Canary Client v" + if "<%= self.diff %>" == "" then "<%= pkg.version %>.<%= self.hash %>" else "<%= pkg.version %>.<%= self.hash %> (development)"
+                    webxml_display_name: "Canary Client v<%= pkg.canary.version %>"
                 files: [
                     expand: true
                     cwd: "build"
@@ -142,22 +139,32 @@ module.exports = (grunt) ->
                 ]
     )
 
+    grunt.registerTask("war:parse_version", "", () ->
+        version =
+            number: grunt.config("pkg.version")
+        hash = grunt.config("hash")
+        diff = grunt.config("diff")
+        grunt.config.set("pkg.canary.version", if diff == "" then version.number + "." + hash else version.number + "." + hash + " (development)")
+    )
+
+    grunt.registerTask("war:build_versioned", ["gta:git_diff",
+                                               "gta:git_rev_parse",
+                                               "war:parse_version",
+                                               "war:build"])
+
     grunt.registerTask("build", ["clean:build", 
                                  "concat:coffee",
-                                 "coffee:convert",
-                                 "clean:coffee",
+                                 "coffee:convert_to_js",
+                                 "clean:coffee_build",
                                  "concat:js",
-                                 "uglify:jsmin",
+                                 "uglify:minify_js",
                                  "concat:css",
-                                 "cssmin:run",
+                                 "cssmin:minify_css",
                                  "copy:fonts",
                                  "copy:html",
                                  "copy:tpl",
-                                 "gta:git_status",
-                                 "gta:git_diff",
-                                 "gta:git_rev_parse",
-                                 "war:build"])
+                                 "war:build_versioned"])
 
-    grunt.renameTask("watch", "run_watch")
+    grunt.renameTask("watch", "watch_files")
     grunt.registerTask("watch", ["build",
-                                 "run_watch"])
+                                 "watch_files"])

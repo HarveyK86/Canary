@@ -1,6 +1,7 @@
 {
     "name": "CanaryClient",
     "description": "Canary Client",
+    "version": "0.0.1",
     "readme": "README.md",
     "repository": {
         "type": "git",
@@ -15,6 +16,7 @@
         "grunt-contrib-cssmin": "0.12.2",
         "grunt-contrib-uglify": "0.9.1",
         "grunt-contrib-watch": "0.6.1",
+        "grunt-git-them-all": "0.0.13",
         "grunt-war": "0.4.5"
     },
     "scripts": {

@@ -1,7 +1,8 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:jacoco="antlib:org.jacoco.ant" name="CanaryServer" basedir=".">
 
 	<!-- Properties -->
-	<property file="${basedir}/canary.properties"  />
+	<property file="${basedir}/canary.properties" />
+	<property file="${basedir}/version.properties" />
 
 	<property name="bin" value="${basedir}/bin" />
 	<property name="build" value="${basedir}/build" />
@@ -321,13 +322,36 @@
 
 	<target name="build" depends="compile-main" description="">
 		<mkdir dir="${build}" />
-		<war destfile="${build}/canary-server.war" webxml="${main.config}/web.xml">
+		<exec executable="git" outputproperty="hash">
+			<arg value="rev-parse" />
+			<arg value="--short" />
+			<arg value="HEAD" />
+		</exec>
+		<exec executable="git" outputproperty="diff">
+			<arg value="diff" />
+			<arg value="--shortstat" />
+			<arg value="HEAD" />
+		</exec>
+		<condition property="canary.version" value="${version.number}.${hash}" else="${version.number}.${hash} (development)">
+			<equals arg1="${diff}" arg2="" />
+		</condition>
+		<copy file="${main.config}/web.xml" tofile="${build}/web.xml">
+			<filterchain>
+				<replacetokens>
+					<token key="canary.version" value="${canary.version}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+		<war destfile="${build}/canary-server.war" webxml="${build}/web.xml">
 			<webinf dir="${main.config}">
 				<exclude name="**/web.xml" />
 			</webinf>
 			<lib dir="${main.lib}" />
 			<classes dir="${main.bin}" />
 			<fileset file="${basedir}/log4j.properties" />
+			<manifest>
+				<attribute name="Canary-Version" value="${canary.version}" />
+			</manifest>
 		</war>
 	</target>
 

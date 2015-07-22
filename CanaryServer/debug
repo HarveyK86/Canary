@@ -1,0 +1,36 @@
+2015-07-22 11:09:57.234:WARN:omjr.Runner:No tx manager found
+2015-07-22 11:09:57.273:INFO:omjr.Runner:Deploying file:/home/ubuntu/workspace/CanaryServer/build/canary-server.war @ /CanaryServer
+2015-07-22 11:09:57.297:INFO:oejs.Server:jetty-8.y.z-SNAPSHOT
+2015-07-22 11:09:57.338:INFO:oejw.WebInfConfiguration:Extract jar:file:/home/ubuntu/workspace/CanaryServer/build/canary-server.war!/ to /tmp/jetty-0.0.0.0-8080-canary-server.war-_CanaryServer-any-/webapp
+2015-07-22 11:09:58.616:INFO:oejpw.PlusConfiguration:No Transaction manager found - if your webapp requires one, please configure one.
+2015-07-22 11:10:04.468:INFO:/CanaryServer:No Spring WebApplicationInitializer types detected on classpath
+2015-07-22 11:10:24.744:WARN:omjr.Runner:No tx manager found
+2015-07-22 11:10:24.786:INFO:omjr.Runner:Deploying file:/home/ubuntu/workspace/CanaryServer/build/canary-server.war @ /CanaryServer
+2015-07-22 11:10:24.803:INFO:oejs.Server:jetty-8.y.z-SNAPSHOT
+2015-07-22 11:10:24.839:INFO:oejw.WebInfConfiguration:Extract jar:file:/home/ubuntu/workspace/CanaryServer/build/canary-server.war!/ to /tmp/jetty-0.0.0.0-8080-canary-server.war-_CanaryServer-any-/webapp
+2015-07-22 11:10:25.941:INFO:oejpw.PlusConfiguration:No Transaction manager found - if your webapp requires one, please configure one.
+2015-07-22 11:10:29.697:INFO:/CanaryServer:No Spring WebApplicationInitializer types detected on classpath
+log4j:WARN No appenders could be found for logger (org.canary.server.ContextListener).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+2015-07-22 11:10:30.336:INFO:/CanaryServer:Initializing Spring root WebApplicationContext
+2015-07-22 11:10:35.774:WARN:omjr.Runner:No tx manager found
+2015-07-22 11:10:35.811:INFO:omjr.Runner:Deploying file:/home/ubuntu/workspace/CanaryServer/build/canary-server.war @ /CanaryServer
+2015-07-22 11:10:35.826:INFO:oejs.Server:jetty-8.y.z-SNAPSHOT
+2015-07-22 11:10:35.862:INFO:oejw.WebInfConfiguration:Extract jar:file:/home/ubuntu/workspace/CanaryServer/build/canary-server.war!/ to /tmp/jetty-0.0.0.0-8080-canary-server.war-_CanaryServer-any-/webapp
+2015-07-22 11:10:36.897:INFO:oejpw.PlusConfiguration:No Transaction manager found - if your webapp requires one, please configure one.
+2015-07-22 11:10:40.561:INFO:/CanaryServer:No Spring WebApplicationInitializer types detected on classpath
+log4j:WARN No appenders could be found for logger (org.canary.server.ContextListener).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+2015-07-22 11:10:43.078:INFO:/CanaryServer:Initializing Spring root WebApplicationContext
+2015-07-22 11:12:57.794:WARN:omjr.Runner:No tx manager found
+2015-07-22 11:12:57.833:INFO:omjr.Runner:Deploying file:/home/ubuntu/workspace/CanaryServer/build/canary-server.war @ /CanaryServer
+2015-07-22 11:12:57.849:INFO:oejs.Server:jetty-8.y.z-SNAPSHOT
+2015-07-22 11:12:57.894:INFO:oejw.WebInfConfiguration:Extract jar:file:/home/ubuntu/workspace/CanaryServer/build/canary-server.war!/ to /tmp/jetty-0.0.0.0-8080-canary-server.war-_CanaryServer-any-/webapp
+2015-07-22 11:12:59.015:INFO:oejpw.PlusConfiguration:No Transaction manager found - if your webapp requires one, please configure one.
+2015-07-22 11:13:12.472:WARN:omjr.Runner:No tx manager found
+2015-07-22 11:13:12.521:INFO:omjr.Runner:Deploying file:/home/ubuntu/workspace/CanaryServer/build/canary-server.war @ /CanaryServer
+2015-07-22 11:13:12.545:INFO:oejs.Server:jetty-8.y.z-SNAPSHOT
+2015-07-22 11:13:12.592:INFO:oejw.WebInfConfiguration:Extract jar:file:/home/ubuntu/workspace/CanaryServer/build/canary-server.war!/ to /tmp/jetty-0.0.0.0-8080-canary-server.war-_CanaryServer-any-/webapp
+2015-07-22 11:13:13.796:INFO:oejpw.PlusConfiguration:No Transaction manager found - if your webapp requires one, please configure one.

@@ -355,6 +355,18 @@
 		</war>
 	</target>
 
+	<!-- Deploy -->
+	<target name="deploy" description="">
+        <java jar="${basedir}/../jetty-runner.jar" fork="true" maxmemory="256m" failonerror="true">
+        	<arg value="--path" />
+            <arg value="/CanaryServer" />
+            <arg value="${build}/canary-server.war" />
+            <classpath>
+                <pathelement location="${basedir}/canary.properties"/>
+            </classpath>
+        </java>
+	</target>
+
 	<target name="ci-build" depends="macker, pmd, enable-jacoco, junit, build, junit-integration, jacoco, javadoc" description="" />
 
 </project>
